@@ -17,11 +17,11 @@ export default function LandingPage() {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 40, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
+    visible: {
+      opacity: 1,
+      y: 0,
       scale: 1,
-      transition: { type: "spring", stiffness: 100, damping: 20, mass: 1 } 
+      transition: { type: "spring", stiffness: 100, damping: 20, mass: 1 }
     }
   };
 
@@ -150,7 +150,7 @@ export default function LandingPage() {
 
       <div className="q-landing-wrapper">
         <div className="q-bg-grid" />
-        
+
         {/* Assumes you have styled these components based on previous steps */}
         <div style={{ position: 'relative', zIndex: 10 }}>
           <Navbar />
@@ -159,8 +159,8 @@ export default function LandingPage() {
 
         {/* --- HOW IT WORKS SECTION --- */}
         <section style={{ padding: '140px 24px', maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -175,7 +175,7 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -228,14 +228,14 @@ export default function LandingPage() {
 
         {/* --- GITHUB SECTION --- */}
         <section style={{ padding: '80px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 10 }}>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ type: "spring", stiffness: 80 }}
-            style={{ 
-              maxWidth: '700px', 
-              width: '100%', 
+            style={{
+              maxWidth: '700px',
+              width: '100%',
               background: 'linear-gradient(180deg, rgba(30,30,30,0.4) 0%, rgba(10,10,10,0.8) 100%)',
               border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: '32px',
@@ -249,22 +249,22 @@ export default function LandingPage() {
             {/* Soft glow behind the Github Icon */}
             <div style={{ position: 'absolute', top: '40px', left: '50%', transform: 'translateX(-50%)', width: '120px', height: '120px', background: 'rgba(255,255,255,0.1)', filter: 'blur(40px)', borderRadius: '50%' }} />
 
-            <div style={{ 
-              display: 'inline-flex', padding: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)', 
-              border: '1px solid rgba(255,255,255,0.15)', borderRadius: '50%', marginBottom: '32px', position: 'relative' 
+            <div style={{
+              display: 'inline-flex', padding: '20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
+              border: '1px solid rgba(255,255,255,0.15)', borderRadius: '50%', marginBottom: '32px', position: 'relative'
             }}>
               <Github size={56} color="#ffffff" strokeWidth={1.5} />
             </div>
-            
+
             <h3 style={{ fontSize: '32px', fontWeight: 800, color: '#ffffff', margin: '0 0 16px 0', letterSpacing: '-0.03em' }}>Level Up With GitHub</h3>
             <p style={{ color: '#a1a1aa', fontSize: '16px', maxWidth: '480px', margin: '0 auto 40px auto', lineHeight: 1.6 }}>
               Connect your profile. We scan your repositories, syntax patterns, and commit history to auto-detect your true technical depth.
             </p>
-            
+
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               {['Repos Analyzed', 'Languages Detected', 'Contribution Streak'].map((chip, i) => (
-                <motion.span 
-                  key={chip} 
+                <motion.span
+                  key={chip}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -279,24 +279,24 @@ export default function LandingPage() {
         </section>
 
         {/* --- STATS BAR --- */}
-        <section style={{ 
-          marginTop: '100px', 
-          borderTop: '1px solid rgba(255,255,255,0.05)', 
+        <section style={{
+          marginTop: '100px',
+          borderTop: '1px solid rgba(255,255,255,0.05)',
           background: 'linear-gradient(to bottom, rgba(20,20,20,0.5), transparent)',
           position: 'relative',
           zIndex: 10
         }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '100px 24px' }}>
-            <motion.div 
+            <motion.div
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-                gap: '64px', 
-                textAlign: 'center' 
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gap: '64px',
+                textAlign: 'center'
               }}
             >
               <motion.div variants={itemVariants}>
@@ -316,9 +316,9 @@ export default function LandingPage() {
         </section>
 
         {/* --- FOOTER --- */}
-        <footer style={{ 
-          borderTop: '1px solid rgba(255,255,255,0.05)', 
-          padding: '48px 24px', 
+        <footer style={{
+          borderTop: '1px solid rgba(255,255,255,0.05)',
+          padding: '48px 24px',
           textAlign: 'center',
           position: 'relative',
           zIndex: 10
@@ -327,7 +327,6 @@ export default function LandingPage() {
             © 2026 Quintelligence. Built for ARTPARK CodeForge Hackathon.
           </p>
         </footer>
-        <Loading />
       </div>
     </>
   );
