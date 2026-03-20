@@ -1,26 +1,164 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --surface: #0a0a0a;
+  --surface-elevated: #111111;
+  --border: #1a1a1a;
+  --border-hover: #222222;
+  --text-primary: #ffffff;
+  --text-muted: #888888;
+  --text-subtle: #555555;
+
+  --accent-purple: #8B5CF6;
+  --accent-cyan: #06B6D4;
+  --accent-pink: #EC4899;
+  --accent-green: #10B981;
+  --accent-orange: #F59E0B;
+  --accent-red: #EF4444;
+
+  --grad-hero: linear-gradient(135deg, #8B5CF6, #06B6D4);
+  --grad-cta: linear-gradient(90deg, #8B5CF6, #EC4899);
+  --grad-card: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(6,182,212,0.08));
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+}
+
+/* Utility Classes */
+.gradient-text {
+  background: linear-gradient(135deg, #8B5CF6, #06B6D4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-pink {
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-btn {
+  background: linear-gradient(90deg, #8B5CF6, #EC4899);
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.gradient-btn:hover {
+  opacity: 0.85;
+}
+
+.surface-card {
+  background: #111111;
+  border: 1px solid #1a1a1a;
+  border-radius: 16px;
+  transition: border-color 0.2s;
+}
+
+.surface-card:hover {
+  border-color: #8B5CF6;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes draw-line {
+  from { height: 0; }
+  to   { height: 100%; }
+}
+
+@keyframes dna-rotate {
+  0%   { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes draw-strand {
+  from { stroke-dashoffset: var(--strand-length, 2000); }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes slide-from-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-from-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-slide-up { animation: slide-up 0.6s ease forwards; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-spin { animation: spin 1s linear infinite; }
+.dna-card-left { animation: slide-from-left 0.5s ease forwards; }
+.dna-card-right { animation: slide-from-right 0.5s ease forwards; }
+
+.dna-card-container { position: absolute; top: 50%; display: flex; width: 320px; z-index: 10; }
+.dna-card-container.left {
+  left: 50%;
+  transform: translateY(-50%) translateX(calc(-100% - 180px));
+  justify-content: flex-end;
+}
+.dna-card-container.right {
+  left: 50%;
+  transform: translateY(-50%) translateX(180px);
+  justify-content: flex-start;
+}
+
+.dna-connector { position: absolute; z-index: 0; top: -1px; height: 2px; border-top: 1.5px dashed #333; }
+.dna-connector.left { left: 50%; transform: translateX(-100%); width: 180px; }
+.dna-connector.right { left: 50%; width: 180px; }
+
+@media (max-width: 1024px) {
+  .dna-card-container.left { transform: translateY(-50%) translateX(calc(-100% - 120px)); }
+  .dna-card-container.right { transform: translateY(-50%) translateX(120px); }
+  .dna-connector.left { width: 120px; }
+  .dna-connector.right { width: 120px; }
+}
+
+@media (max-width: 640px) {
+  .dna-card-container.left, .dna-card-container.right {
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    width: 90vw;
+    justify-content: center;
+  }
+  .dna-connector { display: none; }
 }
