@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Navbar() {
   return (
     <>
@@ -92,15 +94,19 @@ export default function Navbar() {
       }}>
         
         {/* LOGO */}
-        <div style={{ 
-          fontSize: '22px', 
-          fontWeight: 800, 
-          cursor: 'pointer', 
-          color: '#ffffff', /* Crisp white for dark background */
-          letterSpacing: '-0.04em' 
-        }}>
+        <Link
+          href="/"
+          style={{
+            fontSize: '22px',
+            fontWeight: 800,
+            cursor: 'pointer',
+            color: '#ffffff',
+            letterSpacing: '-0.04em',
+            textDecoration: 'none'
+          }}
+        >
           quintelligence
-        </div>
+        </Link>
 
         {/* CENTER LINKS */}
         <div style={{ 
@@ -120,9 +126,13 @@ export default function Navbar() {
         <div style={{ display: 'flex', gap: '12px' }}>
           
           {/* High-Contrast Primary Button */}
-          <button className="glass-btn-primary">
+          <Link
+            href="/login"
+            className="glass-btn-primary"
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+          >
             Get Started
-          </button>
+          </Link>
 
         </div>
         
