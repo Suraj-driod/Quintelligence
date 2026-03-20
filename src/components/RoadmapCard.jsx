@@ -7,16 +7,9 @@ import { useState } from 'react';
 export default function RoadmapCard({ module, index, side }) {
   const [isHovered, setIsHovered] = useState(false);
   
-  // Rotate colors based on index: purple, cyan, pink, green
-  const colors = ['purple', 'cyan', 'pink', 'green'];
-  const accentColor = colors[index % colors.length];
-  
-  const accentHex = {
-    purple: '#8B5CF6',
-    cyan: '#06B6D4',
-    pink: '#EC4899',
-    green: '#10B981',
-  }[accentColor];
+  // Monochrome accent shades based on index
+  const shades = ['#ffffff', '#c6c6c7', '#919191', '#e2e2e2'];
+  const accentHex = shades[index % shades.length];
 
   // For entrance animation
   const animateClass = side === 'left' ? 'dna-card-left' : 'dna-card-right';
@@ -24,18 +17,22 @@ export default function RoadmapCard({ module, index, side }) {
 
   return (
     <div 
-      className={`surface-card ${animateClass}`}
+      className={`${animateClass}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
         width: '320px',
         maxWidth: '100%',
         padding: '20px',
-        borderColor: isHovered ? accentHex : '#1a1a1a',
-        boxShadow: isHovered ? `0 0 20px ${accentHex}26` : 'none',
-        transition: 'all 0.2s ease',
+        background: isHovered ? 'rgba(31, 31, 31, 0.8)' : 'rgba(31, 31, 31, 0.6)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: `1px solid ${isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(71,71,71,0.3)'}`,
+        borderRadius: '20px',
+        boxShadow: isHovered ? '0 0 30px rgba(255,255,255,0.06)' : 'none',
+        transition: 'all 0.3s ease',
         animationDelay,
-        animationFillMode: 'both' // Ensures it stays hidden before animation
+        animationFillMode: 'both'
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -45,19 +42,20 @@ export default function RoadmapCard({ module, index, side }) {
           Module {String(index + 1).padStart(2, '0')}
         </div>
         <div style={{
-          backgroundColor: '#1a1a1a', color: '#888', borderRadius: '99px', fontSize: '12px', padding: '2px 8px'
+          backgroundColor: 'rgba(255,255,255,0.06)', color: '#919191', borderRadius: '9999px', fontSize: '12px', padding: '2px 8px',
+          border: '1px solid rgba(255,255,255,0.08)'
         }}>
           {module.duration}
         </div>
       </div>
       
-      <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'white', margin: '0 0 12px 0' }}>
+      <h3 style={{ fontSize: '17px', fontWeight: 600, color: '#e2e2e2', margin: '0 0 12px 0' }}>
         {module.name}
       </h3>
       
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         {module.skills?.map(skill => (
-          <SkillChip key={skill} label={skill} color={accentColor} size="sm" />
+          <SkillChip key={skill} label={skill} size="sm" />
         ))}
       </div>
       

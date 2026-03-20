@@ -1,105 +1,329 @@
+"use client";
+
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { CheckCircle2, XCircle, Zap, Terminal, GitMerge, BrainCircuit, ArrowRight } from 'lucide-react';
+// Note: Assuming GitHubCard and SkillChip are still in your components folder. 
+// If they don't look good with this new theme, let me know and I can upgrade them too.
 import GitHubCard from '../../components/GitHubCard';
 import SkillChip from '../../components/SkillChip';
 
 export default function AnalysisPage() {
+  // Framer Motion Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
+  };
+
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '60px 24px' }}>
-      {/* Top Summary Strip */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '32px', flexWrap: 'wrap' }}>
-        <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#10B981', borderRadius: '99px', padding: '10px 20px', fontSize: '14px', fontWeight: 600 }}>
-          12 Skills Detected
-        </div>
-        <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#EF4444', borderRadius: '99px', padding: '10px 20px', fontSize: '14px', fontWeight: 600 }}>
-          5 Gaps Found
-        </div>
-        <div style={{ background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.3)', color: '#06B6D4', borderRadius: '99px', padding: '10px 20px', fontSize: '14px', fontWeight: 600 }}>
-          7 Already Known
-        </div>
-      </div>
+    <>
+      <style>{`
+        .analysis-wrapper {
+          background-color: #000000;
+          color: #e2e2e2;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          min-height: 100vh;
+          overflow-x: hidden;
+          position: relative;
+        }
 
-      <GitHubCard />
+        /* Ambient Background Grid */
+        .q-bg-grid {
+          position: absolute;
+          inset: 0;
+          background-image: 
+            linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+          background-size: 64px 64px;
+          mask-image: radial-gradient(circle at top center, black 40%, transparent 100%);
+          -webkit-mask-image: radial-gradient(circle at top center, black 40%, transparent 100%);
+          z-index: 0;
+          pointer-events: none;
+        }
 
-      {/* Three Skill Columns */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', marginBottom: '40px' }}>
+        /* Top Summary Metrics */
+        .metric-pill {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 9999px;
+          padding: 10px 24px;
+          font-size: 14px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+          transition: all 0.3s ease;
+        }
+        .metric-pill:hover {
+          background: rgba(255,255,255,0.06);
+          border-color: rgba(255,255,255,0.15);
+          transform: translateY(-2px);
+        }
+
+        /* Skill Columns Base Card */
+        .skill-column-card {
+          background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%);
+          border-radius: 24px;
+          padding: 24px;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.4s ease;
+        }
         
-        {/* Strong */}
-        <div>
-          <h2 style={{ color: '#10B981', fontSize: '18px', fontWeight: 600, marginBottom: '4px' }}>✓ You Already Know</h2>
-          <p style={{ color: '#888', fontSize: '13px', marginBottom: '24px' }}>Skills from resume + GitHub matching JD</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div className="surface-card" style={{ padding: '16px', background: 'rgba(16,185,129,0.05)', borderColor: 'rgba(16,185,129,0.2)' }}>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <SkillChip label="Python" color="green" />
-                <SkillChip label="JavaScript" color="green" />
-                <SkillChip label="React" color="green" />
-                <SkillChip label="Next.js" color="green" />
-                <SkillChip label="CSS" color="green" />
+        /* Themed Glowing Borders */
+        .column-success { border: 1px solid rgba(16, 185, 129, 0.15); }
+        .column-success:hover { border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 10px 40px rgba(16, 185, 129, 0.05); }
+        
+        .column-danger { border: 1px solid rgba(244, 63, 94, 0.15); }
+        .column-danger:hover { border-color: rgba(244, 63, 94, 0.4); box-shadow: 0 10px 40px rgba(244, 63, 94, 0.05); }
+        
+        .column-warning { border: 1px solid rgba(245, 158, 11, 0.15); }
+        .column-warning:hover { border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 10px 40px rgba(245, 158, 11, 0.05); }
+
+        /* Terminal Window */
+        .terminal-window {
+          background: #050505;
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px;
+          padding: 24px;
+          font-family: 'JetBrains Mono', 'Fira Code', monospace;
+          font-size: 13px;
+          line-height: 1.8;
+          color: #a1a1aa;
+          box-shadow: inset 0 2px 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.3);
+          position: relative;
+        }
+        .terminal-header {
+          display: flex;
+          gap: 6px;
+          margin-bottom: 20px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        /* Primary Action Button */
+        .q-btn-generate {
+          background: linear-gradient(180deg, #ffffff 0%, #d4d4d8 100%);
+          color: #000000;
+          border: none;
+          border-radius: 9999px;
+          padding: 20px 48px;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 16px;
+          font-weight: 800;
+          letter-spacing: -0.01em;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          box-shadow: inset 0 1px 1px rgba(255,255,255,1), 0 8px 24px rgba(255,255,255,0.15);
+          transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .q-btn-generate:hover {
+          transform: translateY(-4px);
+          box-shadow: inset 0 1px 1px rgba(255,255,255,1), 0 12px 32px rgba(255,255,255,0.25);
+        }
+
+        /* Inline Chip Overrides (In case your external SkillChip component is too dark) */
+        .level-badge {
+          font-size: 10px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          padding: 2px 8px;
+          border-radius: 6px;
+          margin-left: 8px;
+          color: #a1a1aa;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+      `}</style>
+
+      <div className="analysis-wrapper">
+        <div className="q-bg-grid" />
+        
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '80px 24px', position: 'relative', zIndex: 10 }}>
+          
+          {/* HEADER & TOP SUMMARY STRIP */}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            style={{ marginBottom: '48px', display: 'flex', flexDirection: 'column', gap: '24px' }}
+          >
+            <div>
+              <h1 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '-0.03em', color: '#ffffff' }}>
+                Analysis Complete
+              </h1>
+              <p style={{ color: '#a1a1aa', fontSize: '16px', margin: 0 }}>We've mapped your profile against the target role.</p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <div className="metric-pill" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)' }}>
+                <BrainCircuit size={16} />
+                12 Skills Detected
+              </div>
+              <div className="metric-pill" style={{ color: '#f43f5e' }}>
+                <XCircle size={16} />
+                5 Gaps Found
+              </div>
+              <div className="metric-pill" style={{ color: '#10b981' }}>
+                <CheckCircle2 size={16} />
+                7 Already Known
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Missing */}
-        <div>
-          <h2 style={{ color: '#EF4444', fontSize: '18px', fontWeight: 600, marginBottom: '4px' }}>✗ Skill Gaps</h2>
-          <p style={{ color: '#888', fontSize: '13px', marginBottom: '24px' }}>Required skills completely missing</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div className="surface-card" style={{ padding: '16px', background: 'rgba(239,68,68,0.05)', borderColor: 'rgba(239,68,68,0.2)' }}>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <SkillChip label="GraphQL" color="red">
-                  <span style={{ fontSize: '10px', background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>Intermediate</span>
-                </SkillChip>
-                <SkillChip label="Docker" color="red">
-                  <span style={{ fontSize: '10px', background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>Basic</span>
-                </SkillChip>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            style={{ marginBottom: '64px' }}
+          >
+            <GitHubCard />
+          </motion.div>
+
+          {/* THREE SKILL COLUMNS */}
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '64px' }}
+          >
+            {/* COLUMN 1: Strong */}
+            <motion.div variants={itemVariants} className="skill-column-card column-success">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '8px', borderRadius: '10px', color: '#10b981' }}>
+                  <CheckCircle2 size={20} strokeWidth={2.5} />
+                </div>
+                <h2 style={{ color: '#ffffff', fontSize: '18px', fontWeight: 700, margin: 0 }}>You Already Know</h2>
+              </div>
+              <p style={{ color: '#71717a', fontSize: '14px', marginBottom: '24px', paddingLeft: '44px', margin: 0 }}>Skills matched from your profile.</p>
+              
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '24px' }}>
+                <SkillChip label="Python" />
+                <SkillChip label="JavaScript" />
+                <SkillChip label="React" />
+                <SkillChip label="Next.js" />
+                <SkillChip label="CSS" />
+              </div>
+            </motion.div>
+
+            {/* COLUMN 2: Missing */}
+            <motion.div variants={itemVariants} className="skill-column-card column-danger">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                <div style={{ background: 'rgba(244, 63, 94, 0.1)', padding: '8px', borderRadius: '10px', color: '#f43f5e' }}>
+                  <XCircle size={20} strokeWidth={2.5} />
+                </div>
+                <h2 style={{ color: '#ffffff', fontSize: '18px', fontWeight: 700, margin: 0 }}>Skill Gaps</h2>
+              </div>
+              <p style={{ color: '#71717a', fontSize: '14px', marginBottom: '24px', paddingLeft: '44px', margin: 0 }}>Required skills completely missing.</p>
+              
+              <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', marginTop: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '12px' }}>
+                  <span style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px' }}>GraphQL</span>
+                  <span className="level-badge" style={{ marginLeft: 'auto' }}>Intermediate Req.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '12px' }}>
+                  <span style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px' }}>Docker</span>
+                  <span className="level-badge" style={{ marginLeft: 'auto' }}>Basic Req.</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* COLUMN 3: Weak */}
+            <motion.div variants={itemVariants} className="skill-column-card column-warning">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '8px', borderRadius: '10px', color: '#f59e0b' }}>
+                  <Zap size={20} strokeWidth={2.5} />
+                </div>
+                <h2 style={{ color: '#ffffff', fontSize: '18px', fontWeight: 700, margin: 0 }}>Needs Improvement</h2>
+              </div>
+              <p style={{ color: '#71717a', fontSize: '14px', marginBottom: '24px', paddingLeft: '44px', margin: 0 }}>Skills below required proficiency.</p>
+              
+              <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', marginTop: '24px' }}>
+                <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>TypeScript</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#a1a1aa' }}>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '6px' }}>Beginner</span>
+                    <ArrowRight size={12} />
+                    <span style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fcd34d', padding: '4px 8px', borderRadius: '6px', fontWeight: 600 }}>Intermediate</span>
+                  </div>
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>System Design</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#a1a1aa' }}>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '6px' }}>Intermediate</span>
+                    <ArrowRight size={12} />
+                    <span style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fcd34d', padding: '4px 8px', borderRadius: '6px', fontWeight: 600 }}>Advanced</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* AI REASONING TERMINAL */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="terminal-window" 
+            style={{ marginBottom: '64px' }}
+          >
+            <div className="terminal-header">
+              <div className="dot dot-red"></div>
+              <div className="dot dot-yellow"></div>
+              <div className="dot dot-green"></div>
+              <div style={{ marginLeft: '12px', color: '#71717a', fontSize: '12px', fontFamily: 'sans-serif', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Terminal size={14} /> AI Processing Log
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Weak */}
-        <div>
-          <h2 style={{ color: '#F59E0B', fontSize: '18px', fontWeight: 600, marginBottom: '4px' }}>⚡ Needs Improvement</h2>
-          <p style={{ color: '#888', fontSize: '13px', marginBottom: '24px' }}>Skills below required proficiency</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div className="surface-card" style={{ padding: '16px', background: 'rgba(245,158,11,0.05)', borderColor: 'rgba(245,158,11,0.2)' }}>
-              <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
-                <SkillChip label="TypeScript" color="orange">
-                  <span style={{ fontSize: '10px', background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>Beginner → Intermediate</span>
-                </SkillChip>
-                <SkillChip label="System Design" color="orange">
-                  <span style={{ fontSize: '10px', background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>Intermediate → Advanced</span>
-                </SkillChip>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ color: '#a1a1aa' }}>
+                <span style={{ color: '#10b981' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> Scanning resume and GitHub repos for matches against Senior Frontend Developer JD...
+              </div>
+              <div style={{ color: '#a1a1aa' }}>
+                <span style={{ color: '#10b981' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> Found strong evidence of React/Next.js and general JS/Python from 24 public repos.
+              </div>
+              <div style={{ color: '#a1a1aa' }}>
+                <span style={{ color: '#f43f5e' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> Missing evidence of GraphQL and Docker. JD strictly requires intermediate GraphQL for data fetching.
+              </div>
+              <div style={{ color: '#a1a1aa' }}>
+                <span style={{ color: '#f59e0b' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> TypeScript is mentioned in resume, but GitHub shows predominantly JS repos, classifying as "Needs Improvement" to clear Senior bar.
               </div>
             </div>
-          </div>
+          </motion.div>
+
+          {/* CTA LAYER */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            style={{ textAlign: 'center' }}
+          >
+            <Link href="/pathway" style={{ textDecoration: 'none' }}>
+              <button className="q-btn-generate">
+                <GitMerge size={20} />
+                Generate DNA Pathway
+              </button>
+            </Link>
+          </motion.div>
+
         </div>
-
       </div>
-
-      {/* Reasoning Section */}
-      <div className="surface-card" style={{ padding: '24px', marginBottom: '48px' }}>
-        <h3 style={{ color: '#8B5CF6', fontSize: '16px', fontWeight: 600, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          🧠 AI Reasoning
-        </h3>
-        <div style={{ color: '#888', fontSize: '14px', lineHeight: 1.8, fontFamily: 'monospace' }}>
-          &gt; Scanning resume and GitHub repos for matches against Senior Frontend Developer JD...<br/>
-          &gt; Found strong evidence of React/Next.js and general JS/Python from 24 public repos.<br/>
-          &gt; Missing evidence of GraphQL and Docker. JD strictly requires intermediate GraphQL for data fetching.<br/>
-          &gt; TypeScript is mentioned in resume, but GitHub shows predominantly JS repos, classifying as &quot;Needs Improvement&quot; to clear Senior bar.
-        </div>
-      </div>
-
-      {/* CTA Layer */}
-      <div style={{ textAlign: 'center' }}>
-        <Link href="/pathway">
-          <button className="gradient-btn" style={{ borderRadius: '99px', padding: '16px 40px', fontSize: '17px', fontWeight: 600 }}>
-            Generate My DNA Pathway →
-          </button>
-        </Link>
-      </div>
-
-    </div>
+    </>
   );
 }

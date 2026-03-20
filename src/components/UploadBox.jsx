@@ -46,17 +46,19 @@ export default function UploadBox({ onFileSelect }) {
       onDrop={handleDrop}
       onClick={handleClick}
       style={{
-        border: `2px dashed ${file ? '#10B981' : isDragging ? '#8B5CF6' : '#333'}`,
-        backgroundColor: file ? 'rgba(16,185,129,0.05)' : isDragging ? 'rgba(139,92,246,0.05)' : 'transparent',
-        borderRadius: '16px',
+        border: `2px dashed ${file ? '#919191' : isDragging ? '#ffffff' : '#474747'}`,
+        backgroundColor: file ? 'rgba(255,255,255,0.03)' : isDragging ? 'rgba(255,255,255,0.05)' : 'transparent',
+        borderRadius: '20px',
         padding: '48px',
         textAlign: 'center',
         cursor: 'pointer',
-        transition: 'all 0.2s ease',
+        transition: 'all 0.3s ease',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '12px'
+        gap: '12px',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)'
       }}
     >
       <input 
@@ -68,15 +70,15 @@ export default function UploadBox({ onFileSelect }) {
       />
       {file ? (
         <>
-          <div style={{ color: '#10B981', fontSize: '48px', lineHeight: 1 }}>✓</div>
-          <span style={{ color: 'white', fontSize: '18px', fontWeight: 500 }}>{file.name}</span>
-          <span style={{ color: '#10B981', fontSize: '14px' }}>Ready for analysis</span>
+          <div style={{ color: '#ffffff', fontSize: '48px', lineHeight: 1 }}>✓</div>
+          <span style={{ color: '#e2e2e2', fontSize: '18px', fontWeight: 500 }}>{file.name}</span>
+          <span style={{ color: '#919191', fontSize: '14px' }}>Ready for analysis</span>
         </>
       ) : (
         <>
-          <div style={{ color: '#8B5CF6', fontSize: '48px', lineHeight: 1 }}>⇧</div>
-          <span style={{ color: 'white', fontSize: '18px', fontWeight: 500 }}>Drop your resume here</span>
-          <span style={{ color: '#888', fontSize: '14px' }}>or click to browse • PDF supported</span>
+          <div style={{ color: '#c6c6c7', fontSize: '48px', lineHeight: 1 }}>⇧</div>
+          <span style={{ color: '#e2e2e2', fontSize: '18px', fontWeight: 500 }}>Drop your resume here</span>
+          <span style={{ color: '#919191', fontSize: '14px' }}>or click to browse • PDF supported</span>
         </>
       )}
     </div>

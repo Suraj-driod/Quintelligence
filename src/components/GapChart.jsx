@@ -6,15 +6,15 @@ export default function GapChart({ skills }) {
       {skills.map((skill, i) => (
         <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-            <span style={{ color: '#fff' }}>{skill.name}</span>
-            <span style={{ color: '#888' }}>{skill.current}% → {skill.required}%</span>
+            <span style={{ color: '#e2e2e2' }}>{skill.name}</span>
+            <span style={{ color: '#919191' }}>{skill.current}% → {skill.required}%</span>
           </div>
           <div style={{
             position: 'relative',
             width: '100%',
             height: '8px',
-            backgroundColor: '#111',
-            borderRadius: '99px',
+            backgroundColor: '#2a2a2a',
+            borderRadius: '9999px',
             overflow: 'hidden'
           }}>
             {/* Base Current Level */}
@@ -24,8 +24,8 @@ export default function GapChart({ skills }) {
               top: 0,
               height: '100%',
               width: `${skill.current}%`,
-              backgroundColor: '#333',
-              borderRadius: '99px'
+              backgroundColor: '#474747',
+              borderRadius: '9999px'
             }} />
             {/* Gap to Fill */}
             <div style={{
@@ -34,8 +34,8 @@ export default function GapChart({ skills }) {
               top: 0,
               height: '100%',
               width: `${Math.max(0, skill.required - skill.current)}%`,
-              background: 'linear-gradient(90deg, #F59E0B, #EF4444)',
-              borderRadius: '0 99px 99px 0'
+              background: 'linear-gradient(90deg, #ffffff, #919191)',
+              borderRadius: '0 9999px 9999px 0'
             }} />
           </div>
         </div>
