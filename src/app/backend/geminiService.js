@@ -117,7 +117,8 @@ Important criteria:
 2. In 'analysis.reasoning', provide 3 to 4 string elements, simulating terminal processing logs like 'Scanning resume...' and 'Missing evidence of Docker...'.
 3. In 'pathway', 'role' should be a concise job title reflecting the next logical step or the given JD.
 4. 'modules' array should contain exactly what to learn, with each having an integer 'id', a 'name', 'duration' (like '8 hrs'), array of top 'skills' covered, and a short 'reasoning' why it's recommended.
-5. CRITICAL URL RULES explicitly for 'resources' array: 
+5. 100% GAP COVERAGE (CRITICAL): Ensure ABSOLUTELY NO identified skill gaps are left out. You may group multiple related gaps into a single module if it makes sense, or split complex gaps across multiple modules. What matters is that EVERY single missing or weak skill has a clear learning path. Do not drop items for the sake of a concise response.
+6. CRITICAL URL RULES explicitly for 'resources' array: 
    - NEVER hallucinate URLs. All returned URLs MUST be existent and real. 
    - For YouTube videos, if you do not know the exact video ID, use a search query URL: 'https://www.youtube.com/results?search_query=your+search+topic'.
    - For documentation, prefer detailed official root docs (e.g., 'https://react.dev/learn', 'https://docs.python.org/3/'). 
@@ -178,6 +179,7 @@ Important criteria:
 1. Provide valid JSON only. Do not wrap in markdown tags if possible, or if you do, wrap strictly in \`\`\`json.
 2. The output MUST contain the "modules" array with the exact same object structure as the input, preserving 'resources'.
 3. Maintain the "resources" array. NEVER hallucinate URLs. Use real, existing URLs only. Ensure YouTube links use a valid search query ('https://www.youtube.com/results?search_query=...') if exact video ID is unknown. Use detailed official docs ('https://react.dev/learn'). Use StackOverflow tags or Discord for socials.
+4. 100% GAP COVERAGE: When adjusting modules, ensure that all required topics from the feedback are entirely covered. Group related items if logical, but never omit requested topics just to keep the list short.
 `;
 
     const res = await fetch(`${GEMINI_API}?key=${process.env.GEMINI_API_KEY}`, {
