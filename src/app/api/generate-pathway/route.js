@@ -1,6 +1,7 @@
 import { parseResume } from "@/app/backend/parseResume";
 import { getGithubRepos, extractUsername } from "@/app/backend/githubService";
 import { generatePathwayWithGemini } from "@/app/backend/geminiService";
+import { savePathway } from "@/app/backend/pathwayService";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -8,8 +9,8 @@ export async function POST(req) {
     const formData = await req.formData();
     const resumeFile = formData.get("resume");
     const jobDescription = formData.get("jobDescription") || "";
-    // Note: frontend might not send github if it's not implemented purely yet but let's allow it
-    const githubUrl = formData.get("github") || "";
+    const publicLink = formData.get("publicLink") || formData.get("github") || "";
+    const mindGauge = formData.get("mindGauge") || null;
 
     if (!resumeFile) {
         return NextResponse.json({ error: "No resume file provided" }, { status: 400 });
@@ -21,7 +22,7 @@ export async function POST(req) {
 
     // 1. Parse resume
     const { text, github: parsedGithub } = await parseResume(buffer);
-    const finalGithub = githubUrl || parsedGithub;
+    const finalGithub = publicLink || parsedGithub;
 
     // 2. Get GitHub repos
     let repos = [];
@@ -34,7 +35,7 @@ export async function POST(req) {
     }
 
     // 3. Analyze with Gemini
-    const analysisStr = await generatePathwayWithGemini(text, repos, jobDescription);
+    const analysisStr = await generatePathwayWithGemini(text, repos, jobDescription, mindGauge);
     console.log("==== GEMINI RAW OUTPUT ====");
     console.log(analysisStr);
     console.log("===========================");
@@ -56,6 +57,22 @@ export async function POST(req) {
                 url: finalGithub
             };
         }
+
+        // Save to Firestore
+        const pathwayPayload = {
+            title: result.pathway?.role || "Untitled Pathway",
+            mindGauge: mindGauge,
+            githubData: result.githubProfile || null,
+            gapAnalysis: {
+                missing: result.analysis?.missingSkills?.map(s => s.name || s) || [],
+                weak: result.analysis?.weakSkills?.map(s => s.name || s) || [],
+                strong: result.analysis?.knownSkills || []
+            },
+            modules: result.pathway?.modules || []
+        };
+        const pathwayId = await savePathway('guest_user', pathwayPayload);
+        result.pathwayId = pathwayId;
+
     } catch (e) {
         result = { raw: analysisStr, error: e.message || "Failed to parse JSON" };
     }

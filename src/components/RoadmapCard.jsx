@@ -4,7 +4,7 @@ import SkillChip from './SkillChip';
 import ReasoningTrace from './ReasoningTrace';
 import { useState } from 'react';
 
-export default function RoadmapCard({ module, index, side }) {
+export default function RoadmapCard({ module, index, side, onClick }) {
   const [isHovered, setIsHovered] = useState(false);
   
   // Monochrome accent shades based on index
@@ -20,7 +20,9 @@ export default function RoadmapCard({ module, index, side }) {
       className={`${animateClass}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
       style={{
+        cursor: 'pointer',
         width: '320px',
         maxWidth: '100%',
         padding: '20px',

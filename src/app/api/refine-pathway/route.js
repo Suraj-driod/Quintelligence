@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { refinePathwayWithGemini } from "@/app/backend/geminiService";
+import { updatePathwayModules } from "@/app/backend/pathwayService";
 
 export async function POST(req) {
   try {
-    const { modules, role, feedback } = await req.json();
+    const { modules, role, feedback, pathwayId } = await req.json();
 
     if (!modules || !feedback) {
       return NextResponse.json(
@@ -22,6 +23,10 @@ export async function POST(req) {
         }
         const cleanedStr = refinedStr.replace(/```json/g, "").replace(/```/g, "").trim();
         result = JSON.parse(cleanedStr);
+
+        if (pathwayId && result.modules) {
+           await updatePathwayModules(pathwayId, result.modules, feedback);
+        }
     } catch (e) {
         result = { raw: refinedStr, error: e.message || "Failed to parse JSON" };
         return NextResponse.json(result, { status: 200 });

@@ -32,10 +32,14 @@ export default function PathwayPage() {
   const handleRegenerate = async (feedback) => {
     setIsRegenerating(true);
     try {
+      const dataStr = localStorage.getItem('pathwayData');
+      const parsedData = dataStr ? JSON.parse(dataStr) : {};
+      const pathwayId = parsedData.pathwayId;
+
       const res = await fetch("/api/refine-pathway", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role, modules, feedback })
+        body: JSON.stringify({ role, modules, feedback, pathwayId })
       });
 
       if (!res.ok) throw new Error("Failed to refine pathway");
@@ -45,7 +49,6 @@ export default function PathwayPage() {
         setModules(data.modules);
         
         // Persist to localStorage
-        const dataStr = localStorage.getItem('pathwayData');
         if (dataStr) {
           const parsed = JSON.parse(dataStr);
           if (parsed.pathway) {

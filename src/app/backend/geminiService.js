@@ -49,7 +49,19 @@ Return JSON:
     return data?.candidates?.[0]?.content?.parts?.[0]?.text;
 }
 
-export async function generatePathwayWithGemini(inputText, repos, jobDescription = "") {
+export async function generatePathwayWithGemini(inputText, repos, jobDescription = "", mindGauge = null) {
+    let learnerInstruction = "";
+    if (mindGauge) {
+       const mapped = {
+           "A": "Visual Learner: Provide resources that heavily rely on diagrams, architecture graphs, and visual mapping.",
+           "B": "Auditory Learner: Provide resources linking to video tutorials, tech podcasts, and auditory explanations.",
+           "C": "Kinesthetic Learner: Provide resources linking to hands-on exercises, interactive coding platforms, and lab environments.",
+           "D": "Logical Learner: Provide resources linking strictly to official documentation, whitepapers, and source code.",
+           "E": "Social Learner: Provide resources linking to social media communities, discord servers, StackOverflow tags, and Reddit discussions."
+       };
+       learnerInstruction = mapped[mindGauge] || "";
+    }
+
     const prompt = `
 Analyze this user:
 
@@ -63,6 +75,12 @@ ${jobDescription ? `Target Job Description:\n${jobDescription}` : ""}
 
 Analyze the user's profile against the Target Job Description (if provided) and generate a learning roadmap.
 If no job description is provided, generate a general learning roadmap for their next logical career step.
+
+${learnerInstruction ? `VERY IMPORTANT LEARNER PREFERENCE:
+The user has been identified with the following learning style constraint:
+"${learnerInstruction}"
+You MUST provide 2-3 specific learning resources (with realistic URLs, e.g. youtube.com, official docs, etc) for EACH module that cater EXACTLY to this learning style.` : ""}
+
 We need output strictly in the following JSON format:
 
 {
@@ -84,7 +102,11 @@ We need output strictly in the following JSON format:
         "name": "Advanced TypeScript Patterns", 
         "duration": "8 hrs", 
         "skills": ["TypeScript"], 
-        "reasoning": "Addresses the gap from Beginner to Intermediate TypeScript."
+        "reasoning": "Addresses the gap from Beginner to Intermediate TypeScript.",
+        "resources": [
+           { "type": "video", "title": "Advanced TS Masterclass", "url": "https://youtube.com/..." },
+           { "type": "docs", "title": "TypeScript Official Handnook", "url": "https://www.typescriptlang.org/docs/" }
+        ]
       }
     ]
   }

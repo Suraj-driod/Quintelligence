@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import RoadmapCard from './RoadmapCard';
+import ModuleModal from './ModuleModal';
 import { Sparkles } from 'lucide-react';
 
 export default function DNAHelix({ modules }) {
+  const [selectedModule, setSelectedModule] = useState(null);
   const containerRef = useRef(null);
 
   const ROW_HEIGHT = 240; 
@@ -214,7 +216,7 @@ export default function DNAHelix({ modules }) {
                 viewport={{ once: true, margin: "-15%" }}
                 transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
               >
-                <RoadmapCard module={module} index={i} side={isLeft ? 'left' : 'right'} />
+                <RoadmapCard module={module} index={i} side={isLeft ? 'left' : 'right'} onClick={() => setSelectedModule(module)} />
               </motion.div>
 
             </div>
@@ -224,6 +226,10 @@ export default function DNAHelix({ modules }) {
        
         
       </div>
+
+      {selectedModule && (
+        <ModuleModal module={selectedModule} onClose={() => setSelectedModule(null)} />
+      )}
     </>
   );
 }
