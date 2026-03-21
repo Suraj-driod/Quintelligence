@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import UploadBox from '../../components/UploadBox';
 import { motion, AnimatePresence } from 'framer-motion';
+import Loading from '@/components/Loading';
 import {
   FileText,
   Briefcase,
@@ -76,6 +77,7 @@ export default function OnboardPage() {
 
   return (
     <>
+      {isAnalyzing && <Loading />}
       <style>{`
         * { box-sizing: border-box; }
 
