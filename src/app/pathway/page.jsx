@@ -211,7 +211,7 @@ export default function PathwayPage() {
         <div className="q-bg-grid" />
         <div className="q-core-glow" />
 
-        <div style={{ maxWidth: '960px', margin: '0 auto', padding: '80px 24px', position: 'relative', zIndex: 10 }}>
+        <div style={{ maxWidth: '960px', margin: '0 auto', padding: '100px 24px', position: 'relative', zIndex: 10 }}>
 
           {/* --- HEADER --- */}
           <motion.div

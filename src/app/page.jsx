@@ -1,11 +1,11 @@
 'use client'
-import Navbar from '../components/Navbar';
+
 import HeroSection from '../components/HeroSection';
 import { motion } from 'framer-motion';
 import { FileText, BrainCircuit, Map, Github, ChevronRight } from 'lucide-react';
 import Loading from '@/components/Loading';
 import LoginPage from './login/page';
-
+import { Analytics } from "@vercel/analytics/next"
 
 
 export default function LandingPage() {
@@ -155,8 +155,7 @@ export default function LandingPage() {
         <div className="q-bg-grid" />
 
         {/* Assumes you have styled these components based on previous steps */}
-        <div style={{ position: 'relative', zIndex: 10 }}>
-          <Navbar />
+        <div style={{ position: 'relative', zIndex: 50 }}>
           <HeroSection />
         </div>
 
@@ -333,6 +332,7 @@ export default function LandingPage() {
 
 
       </div>
+      <Analytics />
     </>
   );
 }

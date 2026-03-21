@@ -94,10 +94,10 @@ export default function Navbar() {
         transform: 'translateX(-50%)',
         width: '95%',
         maxWidth: '1200px',
-        zIndex: 50,
+        zIndex: 9999,
 
         /* Dark frosted glass effect specifically for black backgrounds */
-        background: 'rgba(255, 255, 255, 0.05)',
+        background: 'rgba(10, 10, 10, 0.65)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
 
@@ -115,7 +115,7 @@ export default function Navbar() {
 
         {/* LOGO */}
         <Link
-          href={user ? "/dashboard" : "/"}
+          href={"/"}
           style={{
             fontSize: '22px',
             fontWeight: 800,
@@ -137,9 +137,16 @@ export default function Navbar() {
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}>
-          <Link href={user ? "/dashboard" : "/"} className="glass-nav-link" style={{textDecoration: 'none'}}>Home</Link>
-          <Link href="/developers" className="glass-nav-link" style={{textDecoration: 'none'}}>Developers</Link>
-          <Link href="/about" className="glass-nav-link" style={{textDecoration: 'none'}}>About</Link>
+          <Link href={user ? "/dashboard" : "/"} className="glass-nav-link" style={{ textDecoration: 'none' }}>Home</Link>
+
+          {user && (
+            <>
+              <Link href="/onboard" className="glass-nav-link" style={{ textDecoration: 'none' }}>Onboard</Link>
+              <Link href="/pathways" className="glass-nav-link" style={{ textDecoration: 'none' }}>Pathways</Link>
+            </>
+          )}
+          <Link href="/about" className="glass-nav-link" style={{ textDecoration: 'none' }}>About Us</Link>
+
         </div>
 
         {/* ACTION BUTTONS */}
@@ -147,7 +154,7 @@ export default function Navbar() {
 
           {user ? (
             <>
-              <button 
+              <button
                 onClick={handleSignOut}
                 className="glass-btn-secondary"
                 style={{ background: 'transparent', border: 'none', padding: '10px 16px', fontSize: '13px' }}
