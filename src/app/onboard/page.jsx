@@ -18,6 +18,7 @@ import {
   BookOpen,
   Users
 } from 'lucide-react';
+import { auth } from '@/app/backend/firebase';
 
 const mindGaugeOptions = [
   { id: 'A', text: 'Look for clues', icon: <Search size={18} /> },
@@ -46,6 +47,10 @@ export default function OnboardPage() {
       formData.append("jobDescription", jd);
       if (publicLink) formData.append("publicLink", publicLink);
       if (mindGauge) formData.append("mindGauge", mindGauge);
+
+      if (auth.currentUser) {
+         formData.append("userId", auth.currentUser.uid);
+      }
 
       const res = await fetch("/api/generate-pathway", { method: "POST", body: formData });
       if (!res.ok) throw new Error("Failed to generate pathway");

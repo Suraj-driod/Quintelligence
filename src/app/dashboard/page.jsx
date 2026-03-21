@@ -1,13 +1,49 @@
-'use client'
-import React from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import {
-  Plus, ArrowRight, Eye, Trash2, GitBranch,
-  Map, CheckCircle, Clock, Rocket, Layers, ShieldCheck, Cpu, Github, User
+  Plus, ArrowRight, Eye, Trash2, Clock, Layers, Activity
 } from 'lucide-react';
 import Navbar from '../../components/Navbar';
+import { auth } from '@/app/backend/firebase';
+import { getUserPathways, archivePathway } from '@/app/backend/pathwayService';
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [activePathway, setActivePathway] = useState(null);
+  const [secondaryPathways, setSecondaryPathways] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      if (!currentUser) {
+        router.push("/login");
+        return;
+      }
+      setUser(currentUser);
+      
+      try {
+        const pathways = await getUserPathways(currentUser.uid);
+        // "Active" pathway is the first one that is status='active', or the most recent one
+        const active = pathways.find(p => p.status === 'active') || pathways[0];
+        setActivePathway(active || null);
+        
+        // Secondary pathways are anything else
+        const others = pathways.filter(p => p.id !== active?.id);
+        setSecondaryPathways(others);
+      } catch (err) {
+        console.error("Failed to fetch pathways", err);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -47,7 +83,7 @@ export default function DashboardPage() {
           background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 20px;
-          padding: 24px;
+          padding: 32px;
           position: relative;
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
@@ -78,7 +114,8 @@ export default function DashboardPage() {
         .q-gradient-btn {
           background: linear-gradient(135deg, #ffffff, #c6c6c7);
           color: #000;
-          font-weight: 600;
+          font-weight: 700;
+          font-family: inherit;
           border: none;
           padding: 12px 24px;
           border-radius: 999px;
@@ -87,6 +124,7 @@ export default function DashboardPage() {
           display: inline-flex;
           align-items: center;
           gap: 8px;
+          font-size: 14px;
         }
 
         .q-gradient-btn:hover {
@@ -94,25 +132,29 @@ export default function DashboardPage() {
           transform: translateY(-2px);
         }
 
-        .q-main-grid {
-          max-width: 1000px;
+        .q-dashboard-content {
+          max-width: 1100px;
           margin: 0 auto;
+          padding: 120px 24px 80px 24px;
           position: relative;
           z-index: 10;
         }
 
-        .q-dashboard-content {
-          max-width: 1300px;
-          margin: 0 auto;
-          padding: 120px 24px 60px 24px; /* Padding top accounts for fixed/absolute Navbar */
-          position: relative;
-          z-index: 10;
+        .q-split-grid {
+          display: grid;
+          grid-template-columns: 1.2fr 0.8fr;
+          gap: 24px;
+          align-items: start;
+        }
+
+        @media (max-width: 900px) {
+          .q-split-grid {
+            grid-template-columns: 1fr;
+          }
         }
           
-        /* Custom Scrollbar for inner components */
         ::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
+          width: 6px; height: 6px;
         }
         ::-webkit-scrollbar-track {
           background: rgba(255, 255, 255, 0.02);
@@ -129,186 +171,167 @@ export default function DashboardPage() {
       <div className="q-dashboard-wrapper">
         <div className="q-bg-grid" />
 
-        {/* If Navbar is absolute/fixed from landing page CSS, wrap inside this relative block */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100 }}>
           <Navbar />
         </div>
 
-        <div className="q-dashboard-content">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {/* Top Bar */}
-            <motion.header variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '20px' }}>
-              <div>
-                <h1 style={{ margin: 0, fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800 }}>
-                  Welcome back, <span className="q-metallic-text">Alex</span> 👋
-                </h1>
-                <p style={{ margin: '8px 0 0 0', color: '#a1a1aa' }}>Ready to conquer new skills today?</p>
-              </div>
-              <button className="q-gradient-btn">
-                <Plus size={18} /> New Pathway
-              </button>
-            </motion.header>
+        <main className="q-dashboard-content">
+          {loading ? (
+             <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                <span className="q-metallic-text">Synchronizing Data Modules...</span>
+             </div>
+          ) : (
+          <motion.div variants={containerVariants} initial="hidden" animate="visible">
 
-            {/* Stats Row */}
-            <motion.div variants={itemVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-              {[
-                { label: 'Pathways Generated', value: '12', icon: <Map size={24} color="#e2e2e2" /> },
-                { label: 'Skills Detected', value: '142', icon: <Cpu size={24} color="#e2e2e2" /> },
-                { label: 'Gaps Closed', value: '28', icon: <ShieldCheck size={24} color="#e2e2e2" /> },
-                { label: 'Learning Hours', value: '340h', icon: <Clock size={24} color="#e2e2e2" /> }
-              ].map((stat, i) => (
-                <div key={i} className="q-glass-card" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '20px' }}>
-                  <div style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    {stat.icon}
-                  </div>
-                  <div>
-                    <div className="q-metallic-text" style={{ fontSize: '28px', fontWeight: 800, lineHeight: 1, marginBottom: '4px' }}>{stat.value}</div>
-                    <div style={{ fontSize: '13px', color: '#a1a1aa', fontWeight: 600 }}>{stat.label}</div>
-                  </div>
-                </div>
-              ))}
+            {/* Top Action Bar */}
+            <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+              <button className="q-gradient-btn" onClick={() => router.push('/onboard')}>
+                <Plus size={18} /> Initialize New Pathway
+              </button>
             </motion.div>
 
-            {/* Main Grid Content */}
-            <div className="q-main-grid">
-              {/* Left Column */}
-              <motion.div variants={containerVariants}>
-
-                {/* Active Pathway Card */}
-                <motion.div variants={itemVariants} className="q-glass-card" style={{ marginBottom: '32px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-                    <div>
-                      <div style={{ display: 'inline-block', padding: '6px 12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '8px', fontSize: '12px', color: '#10b981', marginBottom: '12px', fontWeight: 600 }}>
-                        ● Active Focus
-                      </div>
-                      <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 700, color: '#fff' }}>Senior Frontend Engineer</h2>
-                      <div style={{ color: '#a1a1aa', fontSize: '14px', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Clock size={14} /> Started 14 days ago
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div className="q-metallic-text" style={{ fontSize: '32px', fontWeight: 800, lineHeight: 1, marginBottom: '4px' }}>37%</div>
-                      <div style={{ color: '#a1a1aa', fontSize: '14px', fontWeight: 500 }}>3/8 Modules</div>
-                    </div>
+            {/* Active Protocol (Hero Card) */}
+            {activePathway ? (
+            <motion.div variants={itemVariants} className="q-glass-card" style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+                <div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '8px', fontSize: '12px', color: '#10b981', marginBottom: '16px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <Activity size={14} /> Active Protocol
                   </div>
-
-                  <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden', marginBottom: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: '37%' }}
-                      transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
-                      style={{ height: '100%', background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)', borderRadius: '4px' }}
-                    />
+                  <h1 style={{ margin: 0, fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>{activePathway.title}</h1>
+                  <div style={{ color: '#a1a1aa', fontSize: '15px', marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Clock size={16} /> Initiated {new Date(activePathway.createdAt?.toDate?.() || Date.now()).toLocaleDateString()}
                   </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      {['React Server Components', 'GraphQL', 'System Design'].map(skill => (
-                        <span key={skill} style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '999px', fontSize: '13px', color: '#d4d4d8', fontWeight: 500 }}>
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                    <button style={{
-                      background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff',
-                      padding: '10px 24px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px',
-                      cursor: 'pointer', fontWeight: 600, transition: 'all 0.3s'
-                    }}
-                      onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                      onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                      Continue <ArrowRight size={16} />
-                    </button>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div className="q-metallic-text" style={{ fontSize: '48px', fontWeight: 800, lineHeight: 1, marginBottom: '8px' }}>
+                    {Math.round((activePathway.progress / (activePathway.modules?.length || 1)) * 100)}%
                   </div>
+                  <div style={{ color: '#a1a1aa', fontSize: '15px', fontWeight: 600 }}>Module {activePathway.progress || 0} of {activePathway.modules?.length || 0}</div>
+                </div>
+              </div>
+
+              <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden', marginBottom: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.round(((activePathway.progress || 0) / (activePathway.modules?.length || 1)) * 100)}%` }}
+                  transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+                  style={{ height: '100%', background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)', borderRadius: '999px' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {(activePathway.gapAnalysis?.missing?.slice(0,3) || []).map(skill => (
+                    <span key={skill} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', fontSize: '13px', color: '#d4d4d8', fontWeight: 600 }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+                <button style={{
+                  background: '#ffffff', color: '#000000', border: 'none',
+                  padding: '12px 28px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px',
+                  cursor: 'pointer', fontWeight: 700, fontSize: '15px', transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)'
+                }}
+                  onClick={() => {
+                     // We cache stringified pathway to match how /pathway loads it if coming from analysis 
+                     localStorage.setItem('pathwayData', JSON.stringify({ pathway: activePathway, pathwayId: activePathway.id }));
+                     router.push('/pathway');
+                  }}
+                  onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                  Resume Module <ArrowRight size={18} />
+                </button>
+              </div>
+            </motion.div>
+            ) : (
+                <motion.div variants={itemVariants} className="q-glass-card" style={{ marginBottom: '24px', textAlign: 'center', padding: '64px 32px' }}>
+                   <p style={{ color: '#a1a1aa', fontSize: '16px' }}>No active protocols found. Initialize a new learning pathway to begin.</p>
                 </motion.div>
+            )}
 
-                {/* My Pathways List */}
-                <motion.div variants={itemVariants} className="q-glass-card" style={{ marginBottom: '32px' }}>
-                  <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: 700 }}>My Pathways</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {[
-                      { role: 'Fullstack Dev', emoji: '⚙️', status: 'Completed', progress: 100, modules: 12, hours: '45h', color: '#10b981' },
-                      { role: 'Cloud Architect', emoji: '☁️', status: 'Archived', progress: 15, modules: 20, hours: '120h', color: '#71717a' }
-                    ].map((pathway, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', flexWrap: 'wrap', gap: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                          <div style={{ fontSize: '24px', width: '48px', height: '48px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{pathway.emoji}</div>
-                          <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
-                              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>{pathway.role}</h4>
-                              <span style={{ fontSize: '11px', padding: '4px 8px', background: `${pathway.color}15`, border: `1px solid ${pathway.color}30`, color: pathway.color, borderRadius: '6px', fontWeight: 600 }}>{pathway.status}</span>
-                            </div>
-                            <div style={{ color: '#a1a1aa', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Layers size={14} /> {pathway.modules} Modules</span>
-                              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={14} /> {pathway.hours}</span>
-                            </div>
+            {/* Split Grid: Pathways & Skills */}
+            <div className="q-split-grid">
+
+              {/* Secondary Pathways */}
+              <motion.div variants={itemVariants} className="q-glass-card">
+                <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: 700, color: '#ffffff' }}>Secondary Pathways</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {secondaryPathways.length === 0 ? (
+                     <p style={{ color: '#71717a', fontSize: '14px' }}>No secondary pathways available.</p>
+                  ) : secondaryPathways.map((pathway, i) => {
+                    const prog = Math.round(((pathway.progress || 0) / (pathway.modules?.length || 1)) * 100);
+                    const color = pathway.status === 'archived' ? '#71717a' : '#10b981';
+                    return (
+                    <div key={i} style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#fff' }}>{pathway.title}</h4>
+                            <span style={{ fontSize: '11px', padding: '4px 8px', background: `${color}15`, border: `1px solid ${color}30`, color: color, borderRadius: '6px', fontWeight: 700, textTransform: 'uppercase' }}>{pathway.status}</span>
+                          </div>
+                          <div style={{ color: '#a1a1aa', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '16px', fontWeight: 500 }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Layers size={14} /> {pathway.modules?.length || 0} Modules</span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={14} /> {(pathway.modules?.length || 0) * 8}h</span>
                           </div>
                         </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-                          <div style={{ width: '120px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#a1a1aa', marginBottom: '6px', fontWeight: 500 }}>
-                              <span>Progress</span><span style={{ color: '#fff' }}>{pathway.progress}%</span>
-                            </div>
-                            <div style={{ height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-                              <motion.div initial={{ width: 0 }} whileInView={{ width: `${pathway.progress}%` }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ height: '100%', background: pathway.color, borderRadius: '3px' }} />
-                            </div>
-                          </div>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: '#d4d4d8', padding: '8px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'} aria-label="View">
-                              <Eye size={16} />
-                            </button>
-                            <button style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: '#ef4444', padding: '8px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'} aria-label="Delete">
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: '#d4d4d8', padding: '8px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s' }} aria-label="View">
+                            <Eye size={16} />
+                          </button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </motion.div>
 
-                {/* Skill Breakdown */}
-                <motion.div variants={itemVariants} className="q-glass-card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
-                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>Skill Breakdown</h3>
-                    <div style={{ display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.03)', padding: '6px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      {['All', 'Strong', 'Weak', 'Missing'].map((tab, i) => (
-                        <button key={tab} style={{ background: i === 0 ? 'rgba(255,255,255,0.1)' : 'transparent', border: 'none', color: i === 0 ? '#fff' : '#a1a1aa', padding: '6px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>{tab}</button>
-                      ))}
+                      <div style={{ width: '100%' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#a1a1aa', marginBottom: '8px', fontWeight: 600 }}>
+                          <span>Progress</span><span style={{ color: '#fff' }}>{prog}%</span>
+                        </div>
+                        <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
+                          <motion.div initial={{ width: 0 }} whileInView={{ width: `${prog}%` }} viewport={{ once: true }} transition={{ duration: 1 }} style={{ height: '100%', background: color, borderRadius: '999px' }} />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {[
-                      { name: 'React.js', level: 'Advanced', percent: 90, color: '#3b82f6' },
-                      { name: 'TypeScript', level: 'Intermediate', percent: 65, color: '#8b5cf6' },
-                      { name: 'System Design', level: 'Beginner', percent: 30, color: '#f59e0b' },
-                      { name: 'Go', level: 'Missing', percent: 5, color: '#ef4444' }
-                    ].map((skill, i) => (
-                      <div key={i}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '10px' }}>
-                          <span style={{ fontWeight: 600, color: '#fff' }}>{skill.name}</span>
-                          <span style={{ color: '#a1a1aa', fontSize: '13px', fontWeight: 500 }}>{skill.level}</span>
-                        </div>
-                        <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                          <motion.div initial={{ width: 0 }} whileInView={{ width: `${skill.percent}%` }} viewport={{ once: true }} transition={{ duration: 1, delay: i * 0.1, ease: 'easeOut' }} style={{ height: '100%', background: skill.color, borderRadius: '4px' }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-
+                  )})}
+                </div>
               </motion.div>
 
-              {/* Right Column */}
+              {/* Skill Matrix */}
+              <motion.div variants={itemVariants} className="q-glass-card">
+                <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: 700, color: '#ffffff' }}>Skill Matrix</h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  {(() => {
+                    const missing = activePathway?.gapAnalysis?.missing || [];
+                    const weak = activePathway?.gapAnalysis?.weak || [];
+                    const known = activePathway?.gapAnalysis?.strong || [];
+                    
+                    const displaySkills = [
+                      ...known.map(s => ({ name: s, level: 'Advanced', percent: 90, color: '#3b82f6' })),
+                      ...weak.map(s => ({ name: s, level: 'Beginner', percent: 35, color: '#f59e0b' })),
+                      ...missing.map(s => ({ name: s, level: 'Missing', percent: 10, color: '#ef4444' }))
+                    ].slice(0, 6); // Just show top 6 for the dashboard
+
+                    if (displaySkills.length === 0) return <p style={{ color: '#71717a', fontSize: '14px' }}>No skill data compiled yet.</p>;
+
+                    return displaySkills.map((skill, i) => (
+                      <div key={i}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '12px' }}>
+                          <span style={{ fontWeight: 700, color: '#fff' }}>{skill.name}</span>
+                          <span style={{ color: '#a1a1aa', fontSize: '13px', fontWeight: 600 }}>{skill.level}</span>
+                        </div>
+                        <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
+                          <motion.div initial={{ width: 0 }} whileInView={{ width: `${skill.percent}%` }} viewport={{ once: true }} transition={{ duration: 1, delay: i * 0.1, ease: 'easeOut' }} style={{ height: '100%', background: skill.color, borderRadius: '999px' }} />
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </motion.div>
 
             </div>
           </motion.div>
-        </div>
+          )}
+        </main>
       </div>
     </>
   );

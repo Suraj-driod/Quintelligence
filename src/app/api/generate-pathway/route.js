@@ -9,6 +9,7 @@ export async function POST(req) {
     const formData = await req.formData();
     const resumeFile = formData.get("resume");
     const jobDescription = formData.get("jobDescription") || "";
+    const userId = formData.get("userId") || "guest_user";
     const publicLink = formData.get("publicLink") || formData.get("github") || "";
     const mindGauge = formData.get("mindGauge") || null;
 
@@ -70,7 +71,7 @@ export async function POST(req) {
             },
             modules: result.pathway?.modules || []
         };
-        const pathwayId = await savePathway('guest_user', pathwayPayload);
+        const pathwayId = await savePathway(userId, pathwayPayload);
         result.pathwayId = pathwayId;
 
     } catch (e) {

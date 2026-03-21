@@ -13,7 +13,16 @@ import {
     Cpu
 } from 'lucide-react';
 
-export default function ProfilePage() {
+export default function Profile({ user, pathways, learnerProfile }) {
+    const activePathway = pathways?.find(p => p.status === 'active') || pathways?.[0];
+    const completedModules = pathways?.reduce((sum, p) => sum + (p.progress || 0), 0) || 0;
+    
+    // Attempt to extract total repos as a proxy for telemetry from the active pathway's github metadata
+    let githubTelemetry = 0;
+    if (activePathway?.githubData) {
+        githubTelemetry = activePathway.githubData.reposCount || activePathway.githubData.public_repos || 0;
+    }
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -185,7 +194,7 @@ export default function ProfilePage() {
                                     letterSpacing: '-0.02em',
                                     lineHeight: 1.05
                                 }}>
-                                    Anonymous
+                                    Anonymous {user?.email ? `<${user.email.split('@')[0]}>` : ''}
                                 </h2>
 
                                 <p style={{
@@ -194,7 +203,7 @@ export default function ProfilePage() {
                                     color: 'var(--text-muted)',
                                     margin: 0, maxWidth: '420px', lineHeight: 1.65
                                 }}>
-                                    System Architect & UI Engineer. Currently synthesizing pathways for web architecture.
+                                    System Architect & UI Engineer. Currently synthesizing pathways for web architecture. {user?.displayName ? `Authenticated as ${user.displayName}.` : ''}
                                 </p>
                             </div>
                         </motion.div>
@@ -221,14 +230,14 @@ export default function ProfilePage() {
                                     fontSize: '24px', fontWeight: 700,
                                     margin: '0 0 8px 0', letterSpacing: '-0.01em', lineHeight: 1.2
                                 }}>
-                                    The Experimenter
+                                    {learnerProfile?.learnerType || 'The Experimenter'}
                                 </h3>
                                 <p style={{
                                     fontFamily: 'var(--font-body)',
                                     fontSize: '15px', fontWeight: 400,
                                     color: 'var(--text-muted)', margin: 0, lineHeight: 1.65
                                 }}>
-                                    Prefers hands-on execution ("Try things out"). Highly adaptive to undocumented APIs and chaotic codebases.
+                                    {learnerProfile?.style || 'Prefers hands-on execution. Highly adaptive to undocumented APIs and chaotic codebases.'}
                                 </p>
                             </div>
 
@@ -252,9 +261,9 @@ export default function ProfilePage() {
                                     fontSize: '32px', fontWeight: 800,
                                     margin: '0 0 6px 0', letterSpacing: '-0.03em',
                                     lineHeight: 1, color: 'var(--text-primary)'
-                                }}>842</p>
+                                }}>{githubTelemetry}</p>
                                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 500, color: 'var(--text-muted)', margin: 0 }}>
-                                    Contributions mapped in the last 365 days.
+                                    Repositories tracked via mapped data.
                                 </p>
                             </div>
 
@@ -281,19 +290,19 @@ export default function ProfilePage() {
                                     margin: '0 0 6px 0', letterSpacing: '-0.01em',
                                     lineHeight: 1.2, color: 'var(--text-primary)'
                                 }}>
-                                    Senior Frontend Architecture
+                                    {activePathway?.title || 'No Active Protocol'}
                                 </h3>
                                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 500, color: 'var(--text-muted)', margin: '0 0 20px 0' }}>
-                                    Module 2/4 — Advanced GraphQL Caching
+                                    {activePathway ? `Module ${activePathway.progress || 0} of ${activePathway.modules?.length || 0}` : 'Initialize a pathway'}
                                 </p>
                             </div>
 
                             <div style={{ width: '100%', height: '6px', background: 'var(--surface-elevated)', borderRadius: '999px', overflow: 'hidden' }}>
                                 <motion.div
                                     initial={{ width: 0 }}
-                                    animate={{ width: '45%' }}
+                                    animate={{ width: `${Math.round(((activePathway?.progress || 0) / (activePathway?.modules?.length || 1)) * 100)}%` }}
                                     transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
-                                    style={{ height: '100%', background: 'var(--accent-white)', borderRadius: '999px' }}
+                                    style={{ height: '100%', background: 'linear-gradient(90deg, #3b82f6, #ec4899)', borderRadius: '999px' }}
                                 />
                             </div>
                         </motion.div>
@@ -310,9 +319,9 @@ export default function ProfilePage() {
                                     fontSize: '48px', fontWeight: 800,
                                     margin: '0 0 4px 0', letterSpacing: '-0.04em',
                                     lineHeight: 1, color: 'var(--text-primary)'
-                                }}>12</p>
+                                }}>{completedModules}</p>
                                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 500, color: 'var(--text-muted)', margin: 0 }}>
-                                    Hackathons & Projects<br />synthesized.
+                                    Modules completely<br />synthesized.
                                 </p>
                             </div>
                         </motion.div>

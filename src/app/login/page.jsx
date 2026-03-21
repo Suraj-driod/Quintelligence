@@ -4,12 +4,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { auth, googleProvider, signInWithPopup } from "@/app/backend/firebase";
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleGoogleLogin = () => {
-    router.push("/onboard");
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (
