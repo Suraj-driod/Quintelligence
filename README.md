@@ -8,7 +8,7 @@ Deployed application: `https://quintelligence.vercel.app/`
 
 ## GitHub Repository
 
-Source code: `https://github.com/Suraj-driod/Quintelligence.git`
+Source code: `https://github.com/Suraj-driod/Quintelligence`
 
 ---
 
@@ -58,8 +58,6 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 GEMINI_API_KEY=your_gemini_key_here
 ```
-
-You should also include a `.env.example` file in the repository with placeholder values only.
 
 ---
 
@@ -140,20 +138,6 @@ docker run -p 3000:3000 --env-file .env quintelligence
 - **Build Args**: `NEXT_PUBLIC_*` variables are required at build time to be baked into the client-side bundles.
 - **Runtime Env**: `GEMINI_API_KEY` and other secret keys are kept out of the image and passed at runtime via the environment for security.
 
----
-
-## Project Structure
-
-```text
-Quintelligence/
-│── Dockerfile
-│── .dockerignore
-│── .env.example
-│── package.json
-│── README.md
-│── public/
-│── app/ or src/
-```
 
 ---
 
@@ -166,29 +150,12 @@ This repository includes:
 - Environment variable template
 - Local and Docker-based setup instructions
 
----
 
-## Important
-
-Do not commit the following files:
-
-```text
-.env
-.env.local
-node_modules
-.next
-```
-
-Make sure these are included in `.gitignore` and `.dockerignore`.
-
----
-
-## Live Preview
-
-Vercel Deployment: `https://quintelligence.vercel.app/`
-
----
 
 ## License
 
 This project was built for hackathon submission and educational purposes.
+
+<div align="center">
+  <i>Built At ArtPark CodeForge Hackathon 2026</i>
+</div>

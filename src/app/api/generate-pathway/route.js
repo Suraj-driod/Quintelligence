@@ -1,5 +1,5 @@
 import { parseResume } from "@/app/backend/parseResume";
-import { getGithubRepos, extractUsername } from "@/app/backend/githubService";
+import { getGithubRepos, extractUsername, getGithubStats } from "@/app/backend/githubService";
 import { generatePathwayWithGemini } from "@/app/backend/geminiService";
 import { savePathway } from "@/app/backend/pathwayService";
 import { NextResponse } from "next/server";
@@ -28,10 +28,12 @@ export async function POST(req) {
     // 2. Get GitHub repos
     let repos = [];
     let username = null;
+    let githubStats = { accountAge: "Unknown", contributions: 0 };
     if (finalGithub) {
         username = extractUsername(finalGithub);
         if (username) {
             repos = await getGithubRepos(username);
+            githubStats = await getGithubStats(username);
         }
     }
 
@@ -55,7 +57,9 @@ export async function POST(req) {
                 username,
                 reposCount: repos?.length || 0,
                 languages: Array.from(new Set(repos.map(r => r.language).filter(Boolean))),
-                url: finalGithub
+                url: finalGithub,
+                accountAge: githubStats.accountAge,
+                contributions: githubStats.contributions
             };
         }
 

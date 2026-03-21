@@ -167,11 +167,11 @@ export default function GitHubCard({ profile }) {
             </div>
             <div className="q-stat-box">
               <div className="q-stat-label"><GitCommitHorizontal size={14} /> Contributions</div>
-              <div className="q-stat-value">842 <span style={{ fontSize: '12px', color: '#71717a', fontWeight: 500 }}>(Past year)</span></div>
+              <div className="q-stat-value">{profile.contributions ?? 'N/A'} <span style={{ fontSize: '12px', color: '#71717a', fontWeight: 500 }}>(Past year)</span></div>
             </div>
             <div className="q-stat-box">
               <div className="q-stat-label"><CalendarDays size={14} /> Account Age</div>
-              <div className="q-stat-value">3 Years</div>
+              <div className="q-stat-value">{profile.accountAge ?? 'N/A'}</div>
             </div>
           </div>
 

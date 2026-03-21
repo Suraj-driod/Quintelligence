@@ -31,7 +31,11 @@ export default function PathwaysPage() {
   }, [router]);
 
   const handlePathwayClick = (pathway) => {
-    localStorage.setItem('pathwayData', JSON.stringify({ pathwayId: pathway.id, pathway }));
+    localStorage.setItem('pathwayData', JSON.stringify({ 
+      pathwayId: pathway.id, 
+      pathway,
+      completedModules: pathway.completedModules || []
+    }));
     router.push('/pathway');
   };
 

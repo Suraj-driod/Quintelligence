@@ -366,7 +366,7 @@ export default function PhotoCard({
                       />
                       Phase {idx + 1}
                     </div>
-                    {completedModules.includes(mod.id) && (
+                    {completedModules.includes(mod.name || mod.title) && (
                       <div style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '12px' }}>
                         <CheckCircle2 size={14} /> Completed
                       </div>
@@ -417,9 +417,9 @@ export default function PhotoCard({
         <ModuleModal
           module={selectedModule}
           onClose={() => setSelectedModule(null)}
-          isCompleted={completedModules.includes(selectedModule.id)}
+          isCompleted={completedModules.includes(selectedModule.name || selectedModule.title)}
           onToggleComplete={() => {
-            if (onToggleComplete) onToggleComplete(selectedModule.id);
+            if (onToggleComplete) onToggleComplete(selectedModule.name || selectedModule.title);
           }}
         />
       )}

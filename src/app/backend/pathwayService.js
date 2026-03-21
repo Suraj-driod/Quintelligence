@@ -158,3 +158,19 @@ export async function archivePathway(pathwayId) {
     throw err
   }
 }
+
+// ── UPDATE PATHWAY PROGRESS ───────────────────────────────────────
+export async function updatePathwayProgress(pathwayId, completedModulesArray, totalModules) {
+  try {
+    const progress = completedModulesArray.length;
+    await updateDoc(doc(db, 'pathways', pathwayId), {
+      completedModules: completedModulesArray,
+      progress: progress,
+      status: progress >= totalModules ? 'completed' : 'active',
+      updatedAt: serverTimestamp()
+    });
+  } catch (err) {
+    console.error('updatePathwayProgress error:', err);
+    throw err;
+  }
+}

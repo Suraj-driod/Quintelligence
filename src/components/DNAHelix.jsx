@@ -329,9 +329,9 @@ export default function DNAHelix({ modules, completedModules = [], onToggleCompl
         <ModuleModal 
           module={selectedModule} 
           onClose={() => setSelectedModule(null)} 
-          isCompleted={completedModules.includes(selectedModule.id)}
+          isCompleted={completedModules.includes(selectedModule.name || selectedModule.title)}
           onToggleComplete={() => {
-            if (onToggleComplete) onToggleComplete(selectedModule.id);
+            if (onToggleComplete) onToggleComplete(selectedModule.name || selectedModule.title);
           }}
         />
       )}

@@ -281,10 +281,13 @@ export default function DashboardPage() {
                       boxShadow: '0 10px 25px rgba(255,255,255,0.15)'
                     }}
                       onClick={() => {
-                        localStorage.setItem('pathwayData', JSON.stringify({ pathway: activePathway, pathwayId: activePathway.id }));
+                        localStorage.setItem('pathwayData', JSON.stringify({
+                          pathway: activePathway,
+                          pathwayId: activePathway.id,
+                          completedModules: activePathway.completedModules || []
+                        }));
                         router.push('/pathway');
-                      }}
-                      onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 15px 35px rgba(255,255,255,0.25)'; }}
+                      }}                      onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 15px 35px rgba(255,255,255,0.25)'; }}
                       onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(255,255,255,0.15)'; }}>
                       Resume Protocol <ArrowRight size={18} />
                     </button>
@@ -309,7 +312,14 @@ export default function DashboardPage() {
                       const prog = Math.round(((pathway.progress || 0) / (pathway.modules?.length || 1)) * 100);
                       const color = pathway.status === 'archived' ? '#71717a' : '#10b981';
                       return (
-                        <div key={i} className="q-magnetic-row">
+                        <div key={i} className="q-magnetic-row" style={{ cursor: 'pointer' }} onClick={() => {
+                          localStorage.setItem('pathwayData', JSON.stringify({
+                            pathway,
+                            pathwayId: pathway.id,
+                            completedModules: pathway.completedModules || []
+                          }));
+                          router.push('/pathway');
+                        }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
                             <div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
@@ -323,6 +333,14 @@ export default function DashboardPage() {
                             </div>
                             <div style={{ display: 'flex', gap: '8px' }}>
                               <button style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', color: '#d4d4d8', padding: '10px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s' }} aria-label="View"
+                                onClick={() => {
+                                  localStorage.setItem('pathwayData', JSON.stringify({
+                                    pathway,
+                                    pathwayId: pathway.id,
+                                    completedModules: pathway.completedModules || []
+                                  }));
+                                  router.push('/pathway');
+                                }}
                                 onMouseOver={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#000000'; }}
                                 onMouseOut={e => { e.currentTarget.style.background = '#0a0a0a'; e.currentTarget.style.color = '#d4d4d8'; }}>
                                 <Eye size={18} />

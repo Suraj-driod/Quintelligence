@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { updatePathwayProgress } from '../backend/pathwayService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Layers, Clock, Sparkles, Activity } from 'lucide-react';
 // Assuming these exist in your project
@@ -81,21 +82,32 @@ export default function PathwayPage() {
     }
   };
 
-  const toggleComplete = (moduleId) => {
-    setCompletedModules(prev => {
-      const newCompleted = prev.includes(moduleId) ? prev.filter(id => id !== moduleId) : [...prev, moduleId];
-      
-      const dataStr = localStorage.getItem('pathwayData');
-      if (dataStr) {
-        try {
-          const parsed = JSON.parse(dataStr);
-          parsed.completedModules = newCompleted;
-          localStorage.setItem('pathwayData', JSON.stringify(parsed));
-        } catch(e) {}
+  const toggleComplete = async (moduleId) => {
+    const isCompleted = !completedModules.includes(moduleId);
+    const newCompleted = isCompleted 
+      ? [...completedModules, moduleId] 
+      : completedModules.filter(id => id !== moduleId);
+
+    setCompletedModules(newCompleted);
+    
+    const dataStr = localStorage.getItem('pathwayData');
+    if (dataStr) {
+      try {
+        const parsed = JSON.parse(dataStr);
+        parsed.completedModules = newCompleted;
+        if (parsed.pathway) {
+          parsed.pathway.completedModules = newCompleted;
+          parsed.pathway.progress = newCompleted.length;
+        }
+        localStorage.setItem('pathwayData', JSON.stringify(parsed));
+
+        if (parsed.pathwayId) {
+          await updatePathwayProgress(parsed.pathwayId, newCompleted, modules.length || 1);
+        }
+      } catch(e) {
+        console.error('Error syncing progress:', e);
       }
-      
-      return newCompleted;
-    });
+    }
   };
 
   const progressPercent = modules.length > 0 ? Math.round((completedModules.length / modules.length) * 100) : 0;
