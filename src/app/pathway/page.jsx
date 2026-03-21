@@ -47,7 +47,7 @@ export default function PathwayPage() {
       const data = await res.json();
       if (data.modules) {
         setModules(data.modules);
-        
+
         // Persist to localStorage
         if (dataStr) {
           const parsed = JSON.parse(dataStr);
@@ -209,10 +209,10 @@ export default function PathwayPage() {
         <div className="q-bg-grid" />
         <div className="q-core-glow" />
 
-        <div style={{ maxWidth: '960px', margin: '0 auto', padding: '80px 24px', position: 'relative', zIndex: 10 }}>
-          
+        <div style={{ maxWidth: '960px', margin: '0 auto', padding: '100px 24px', position: 'relative', zIndex: 10 }}>
+
           {/* --- HEADER --- */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -226,9 +226,9 @@ export default function PathwayPage() {
             <h1 className="q-metallic-text" style={{ fontSize: 'clamp(40px, 5vw, 56px)', fontWeight: 800, margin: '0 0 32px 0', letterSpacing: '-0.04em' }}>
               Your Learning DNA
             </h1>
-            
+
             {/* Meta Information Pills */}
-            <motion.div 
+            <motion.div
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -246,7 +246,7 @@ export default function PathwayPage() {
             </motion.div>
 
             {/* Premium Animated Progress Bar */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -257,7 +257,7 @@ export default function PathwayPage() {
                 <span style={{ color: '#ffffff' }}>15% Complete</span>
               </div>
               <div className="q-progress-container">
-                <motion.div 
+                <motion.div
                   className="q-progress-fill"
                   initial={{ width: '0%' }}
                   animate={{ width: '15%' }}
@@ -269,12 +269,12 @@ export default function PathwayPage() {
 
           {/* --- DNA HELIX BLOCK --- */}
           {/* Notice the physics: When regenerating, it scales down, fades, and blurs to simulate "moving into the background" */}
-          <motion.div 
-            animate={{ 
-              opacity: isRegenerating ? 0.3 : 1, 
+          <motion.div
+            animate={{
+              opacity: isRegenerating ? 0.3 : 1,
               scale: isRegenerating ? 0.95 : 1,
               filter: isRegenerating ? 'blur(8px)' : 'blur(0px)'
-            }} 
+            }}
             transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
             style={{ position: 'relative', zIndex: 5 }}
           >
@@ -284,18 +284,18 @@ export default function PathwayPage() {
           {/* --- CINEMATIC LOADING OVERLAY --- */}
           <AnimatePresence>
             {isRegenerating && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ 
-                  position: 'fixed', inset: 0, zIndex: 100, 
+                style={{
+                  position: 'fixed', inset: 0, zIndex: 100,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: 'rgba(0,0,0,0.4)', pointerEvents: 'none'
                 }}
               >
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0.9, y: 20 }}
                   animate={{ scale: 1, y: 0 }}
                   exit={{ scale: 0.9, y: 20 }}

@@ -98,9 +98,6 @@ const BIT_POSITIONS = [
 export default function HeroSection() {
   const [user, setUser] = useState(null);
 
-  const handleAnimationComplete = () => {
-    console.log('Animation completed!');
-  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
@@ -349,7 +346,6 @@ export default function HeroSection() {
               delay={50}
               animateBy="words"
               direction="top"
-              onAnimationComplete={handleAnimationComplete}
             />
           </div>
 
