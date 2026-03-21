@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { FileText, BrainCircuit, Map, Github, ChevronRight } from 'lucide-react';
 import Loading from '@/components/Loading';
 import LoginPage from './login/page';
-
+import { Analytics } from "@vercel/analytics/next"
 
 
 export default function LandingPage() {
@@ -332,6 +332,7 @@ export default function LandingPage() {
 
 
       </div>
+      <Analytics />
     </>
   );
 }
