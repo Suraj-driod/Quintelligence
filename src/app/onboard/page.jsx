@@ -50,7 +50,7 @@ export default function OnboardPage() {
       if (mindGauge) formData.append("mindGauge", mindGauge);
 
       if (auth.currentUser) {
-         formData.append("userId", auth.currentUser.uid);
+        formData.append("userId", auth.currentUser.uid);
       }
 
       const res = await fetch("/api/generate-pathway", { method: "POST", body: formData });
@@ -250,9 +250,7 @@ export default function OnboardPage() {
         <div className="q-ambient-glow" />
         <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: '460px', margin: '0 auto' }}>
 
-          <div style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#71717a', marginBottom: '40px' }}>
-            Quintelligence
-          </div>
+
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   Plus, ArrowRight, Eye, Trash2, Clock, Layers, Activity
 } from 'lucide-react';
-import Navbar from '../../components/Navbar';
+
 import { auth } from '@/app/backend/firebase';
 import { getUserPathways, archivePathway } from '@/app/backend/pathwayService';
 
@@ -172,7 +172,7 @@ export default function DashboardPage() {
         <div className="q-bg-grid" />
 
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100 }}>
-          <Navbar />
+
         </div>
 
         <main className="q-dashboard-content">

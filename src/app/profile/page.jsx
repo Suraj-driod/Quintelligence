@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { auth } from '@/app/backend/firebase';
 import { getUserPathways, getLearnerProfileFromDB } from '@/app/backend/pathwayService';
 import Profile from '@/components/Profile';
-import Navbar from '@/components/Navbar';
+
 
 export default function ProfileRoute() {
   const router = useRouter();
@@ -50,7 +50,7 @@ export default function ProfileRoute() {
   return (
     <div style={{ background: '#000', minHeight: '100vh' }}>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100 }}>
-         <Navbar />
+
       </div>
       <div style={{ paddingTop: '80px' }}>
          <Profile user={user} pathways={pathways} learnerProfile={learnerProfile} />

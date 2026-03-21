@@ -1,5 +1,5 @@
 'use client'
-import Navbar from '@/components/Navbar';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FileText, BrainCircuit, Map, Github, BookOpen, Target, Network, ChevronRight, Zap } from 'lucide-react';
@@ -276,16 +276,16 @@ export default function AboutPage() {
       <div className="q-about-wrapper">
         <div className="q-bg-grid" />
         <div className="q-core-glow" />
-        
+
         <div style={{ position: 'relative', zIndex: 50 }}>
-          <Navbar />
+
         </div>
 
         {/* --- HERO SECTION --- */}
-        <section style={{ 
-          padding: '200px 24px 100px 24px', 
-          textAlign: 'center', 
-          position: 'relative', 
+        <section style={{
+          padding: '150px 24px 100px 24px',
+          textAlign: 'center',
+          position: 'relative',
           zIndex: 10,
           display: 'flex',
           flexDirection: 'column',
@@ -308,15 +308,15 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            style={{ 
-              fontSize: 'clamp(3rem, 6vw, 5.5rem)', 
-              fontWeight: 800, 
-              margin: '0 0 24px 0', 
-              lineHeight: 1.1, 
+            style={{
+              fontSize: 'clamp(3rem, 6vw, 5.5rem)',
+              fontWeight: 800,
+              margin: '0 0 24px 0',
+              lineHeight: 1.1,
               letterSpacing: '-0.04em'
             }}
           >
-            We're fixing how the world <br className="hidden md:block"/>
+            We're fixing how the world <br className="hidden md:block" />
             <span className="q-metallic-text">onboards talent</span>.
           </motion.h1>
 
@@ -324,12 +324,12 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            style={{ 
-              color: '#a1a1aa', 
-              fontSize: 'clamp(1.1rem, 2vw, 1.3rem)', 
-              maxWidth: '650px', 
-              margin: '0 auto', 
-              lineHeight: 1.6 
+            style={{
+              color: '#a1a1aa',
+              fontSize: 'clamp(1.1rem, 2vw, 1.3rem)',
+              maxWidth: '650px',
+              margin: '0 auto',
+              lineHeight: 1.6
             }}
           >
             Quintelligence replaces standard, one-size-fits-all training with highly personalized, AI-driven pathways built uniquely for your mind.
@@ -350,7 +350,7 @@ export default function AboutPage() {
                 Why We Exist
               </h2>
               <p style={{ color: '#a1a1aa', fontSize: '18px', maxWidth: '700px', margin: '0 auto 40px auto', lineHeight: 1.6 }}>
-                The corporate learning structure is fundamentally broken. We noticed that intelligent engineers were being forced through generic, agonizing curriculums that ignored their actual skillsets. 
+                The corporate learning structure is fundamentally broken. We noticed that intelligent engineers were being forced through generic, agonizing curriculums that ignored their actual skillsets.
               </p>
             </div>
 
@@ -392,7 +392,7 @@ export default function AboutPage() {
         {/* --- WHAT WE BUILT / HOW IT WORKS --- */}
         <section style={{ padding: '80px 24px', position: 'relative', zIndex: 10 }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }} className="md-grid-stack">
-            
+
             {/* Left side: What we built & Product Desc */}
             <motion.div
               initial={{ opacity: 0, x: -40 }}
@@ -456,7 +456,7 @@ export default function AboutPage() {
               style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
               <h3 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '24px', color: '#ffffff' }}>How It Works</h3>
-              
+
               <motion.div variants={itemVariants} className="q-step-box">
                 <div className="q-step-number">1</div>
                 <div>
@@ -489,7 +489,7 @@ export default function AboutPage() {
                 </div>
               </motion.div>
             </motion.div>
-            
+
             {/* Minimal CSS for grid stacking on mobile */}
             <style>{`
               @media (max-width: 900px) {
@@ -506,15 +506,15 @@ export default function AboutPage() {
         <section style={{ padding: '120px 24px', position: 'relative', zIndex: 10, textAlign: 'center' }}>
           <div style={{ maxWidth: '800px', margin: '0 auto', background: 'radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 70%)', padding: '60px 0' }}>
             <BookOpen size={48} color="#ffffff" style={{ margin: '0 auto 24px auto', opacity: 0.8 }} />
-            <p style={{ 
-              fontSize: 'clamp(24px, 4vw, 36px)', 
-              fontWeight: 800, 
-              color: '#ffffff', 
-              lineHeight: 1.4, 
+            <p style={{
+              fontSize: 'clamp(24px, 4vw, 36px)',
+              fontWeight: 800,
+              color: '#ffffff',
+              lineHeight: 1.4,
               letterSpacing: '-0.02em',
               margin: 0
             }}>
-              "Learning should never be wasted. <br/> Every person deserves a path <span className="q-metallic-text">built exactly for them.</span>"
+              "Learning should never be wasted. <br /> Every person deserves a path <span className="q-metallic-text">built exactly for them.</span>"
             </p>
           </div>
         </section>
@@ -541,8 +541,8 @@ export default function AboutPage() {
                   className="q-glass-card"
                   style={{ textAlign: 'center', padding: '48px 32px' }}
                 >
-                  <img 
-                    src={member.avatar} 
+                  <img
+                    src={member.avatar}
                     alt={member.name}
                     style={{
                       width: '100px',
@@ -560,7 +560,7 @@ export default function AboutPage() {
                   <p style={{ color: '#a1a1aa', fontSize: '15px', lineHeight: 1.6, marginBottom: '24px' }}>
                     {member.bio}
                   </p>
-                  <a 
+                  <a
                     href={member.github}
                     target="_blank"
                     rel="noreferrer"
