@@ -1,6 +1,17 @@
+'use client'
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { auth } from '@/app/backend/firebase';
 
 export default function HeroSection() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
   return (
     <>
       <style>{`
@@ -238,14 +249,20 @@ export default function HeroSection() {
             flexWrap: 'wrap', 
             justifyContent: 'center' 
           }}>
-            <Link href="/onboard" style={{ textDecoration: 'none' }}>
-              <button className="btn-premium-primary">
-                Analyze My Skills
-              </button>
-            </Link>
-            <button className="btn-premium-ghost">
-              See How It Works
-            </button>
+            {user ? (
+              <Link href="/dashboard" className="btn-premium-primary" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                Go to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link href="/onboard" className="btn-premium-primary" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                  Analyze My Skills
+                </Link>
+                <Link href="/login" className="btn-premium-ghost" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                  Login
+                </Link>
+              </>
+            )}
           </div>
           
         </div>

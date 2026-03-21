@@ -1,6 +1,26 @@
+'use client'
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { auth } from '@/app/backend/firebase';
 
 export default function Navbar() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error("Sign out error", error);
+    }
+  };
+
   return (
     <>
       {/* SCOPED CSS: Handles hover effects, custom fonts, and premium button styling 
@@ -117,22 +137,43 @@ export default function Navbar() {
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}>
-          <span className="glass-nav-link">Home</span>
-          <span className="glass-nav-link">Developers</span>
-          <span className="glass-nav-link">About</span>
+          <Link href="/" className="glass-nav-link" style={{textDecoration: 'none'}}>Home</Link>
+          <Link href="/developers" className="glass-nav-link" style={{textDecoration: 'none'}}>Developers</Link>
+          <Link href="/about" className="glass-nav-link" style={{textDecoration: 'none'}}>About</Link>
+          {user && (
+             <Link href="/dashboard" className="glass-nav-link" style={{textDecoration: 'none', color: '#10b981'}}>Dashboard</Link>
+          )}
         </div>
 
         {/* ACTION BUTTONS */}
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
 
-          {/* High-Contrast Primary Button */}
-          <Link
-            href="/login"
-            className="glass-btn-primary"
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-          >
-            Get Started
-          </Link>
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="glass-btn-primary"
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+              >
+                Go to Dashboard
+              </Link>
+              <button 
+                onClick={handleSignOut}
+                className="glass-btn-secondary"
+                style={{ background: 'transparent', border: 'none', padding: '10px 16px', fontSize: '13px' }}
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="glass-btn-primary"
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+            >
+              Login
+            </Link>
+          )}
 
         </div>
 
