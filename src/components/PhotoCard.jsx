@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Clock, Target, Layers } from 'lucide-react';
+import { Clock, Target, Layers, CheckCircle2 } from 'lucide-react';
+import ModuleModal from './ModuleModal';
 
 const ACCENTS = [
   { borderColor: '#3B82F6', gradient: 'linear-gradient(145deg, #3B82F6 0%, #050508 65%)' },
@@ -16,12 +17,15 @@ const ACCENTS = [
 export default function PhotoCard({
   className = '',
   modules = [],
+  completedModules = [],
+  onToggleComplete,
   animationDelay = 0.2,
   animationStagger = 0.13,
   easeType = 'back.out(1.1)',
   enableHover = true
 }) {
   const containerRef = useRef(null);
+  const [selectedModule, setSelectedModule] = useState(null);
 
   useEffect(() => {
     if (!modules || modules.length === 0) return;
@@ -336,6 +340,7 @@ export default function PhotoCard({
                   '--spotlight': `${accent.borderColor}20`,
                   /* NO rotation, NO transform here */
                 }}
+                onClick={() => setSelectedModule(mod)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = accent.borderColor;
                   pushSiblings(idx);
@@ -350,15 +355,22 @@ export default function PhotoCard({
                 <div className="q-bw-overlay" />
 
                 <div className="q-card-body">
-                  <div className="q-phase-pill">
-                    <span
-                      className="q-phase-dot"
-                      style={{
-                        background: accent.borderColor,
-                        boxShadow: `0 0 6px ${accent.borderColor}`,
-                      }}
-                    />
-                    Phase {idx + 1}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div className="q-phase-pill">
+                      <span
+                        className="q-phase-dot"
+                        style={{
+                          background: accent.borderColor,
+                          boxShadow: `0 0 6px ${accent.borderColor}`,
+                        }}
+                      />
+                      Phase {idx + 1}
+                    </div>
+                    {completedModules.includes(mod.id) && (
+                      <div style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '12px' }}>
+                        <CheckCircle2 size={14} /> Completed
+                      </div>
+                    )}
                   </div>
 
                   <h3 className="q-card-title">{mod.title || mod.name || 'Unknown Module'}</h3>
@@ -400,6 +412,17 @@ export default function PhotoCard({
           );
         })}
       </div>
+
+      {selectedModule && (
+        <ModuleModal
+          module={selectedModule}
+          onClose={() => setSelectedModule(null)}
+          isCompleted={completedModules.includes(selectedModule.id)}
+          onToggleComplete={() => {
+            if (onToggleComplete) onToggleComplete(selectedModule.id);
+          }}
+        />
+      )}
     </>
   );
 }

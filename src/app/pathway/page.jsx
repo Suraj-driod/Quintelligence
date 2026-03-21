@@ -14,6 +14,7 @@ export default function PathwayPage() {
   const [estimatedHours, setEstimatedHours] = useState(0);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [viewMode, setViewMode] = useState('helix');
+  const [completedModules, setCompletedModules] = useState([]);
 
   useEffect(() => {
     const dataStr = localStorage.getItem('pathwayData');
@@ -23,7 +24,20 @@ export default function PathwayPage() {
         if (parsed.pathway) {
           setModules(parsed.pathway.modules || []);
           setRole(parsed.pathway.role || "Target Role");
-          setEstimatedHours(parsed.pathway.estimatedHours || 0);
+          
+          let totalHours = 0;
+          if (parsed.pathway.modules) {
+            parsed.pathway.modules.forEach(m => {
+              if (m.duration) {
+                const hrs = parseInt(m.duration);
+                if (!isNaN(hrs)) totalHours += hrs;
+              }
+            });
+          }
+          setEstimatedHours(parsed.pathway.estimatedHours || totalHours);
+        }
+        if (parsed.completedModules) {
+          setCompletedModules(parsed.completedModules);
         }
       } catch (e) {
         console.error("Failed to parse pathwayData", e);
@@ -66,6 +80,25 @@ export default function PathwayPage() {
       setIsRegenerating(false);
     }
   };
+
+  const toggleComplete = (moduleId) => {
+    setCompletedModules(prev => {
+      const newCompleted = prev.includes(moduleId) ? prev.filter(id => id !== moduleId) : [...prev, moduleId];
+      
+      const dataStr = localStorage.getItem('pathwayData');
+      if (dataStr) {
+        try {
+          const parsed = JSON.parse(dataStr);
+          parsed.completedModules = newCompleted;
+          localStorage.setItem('pathwayData', JSON.stringify(parsed));
+        } catch(e) {}
+      }
+      
+      return newCompleted;
+    });
+  };
+
+  const progressPercent = modules.length > 0 ? Math.round((completedModules.length / modules.length) * 100) : 0;
 
   // Framer Motion Orchestration
   const containerVariants = {
@@ -256,13 +289,13 @@ export default function PathwayPage() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px', fontWeight: 600 }}>
                 <span style={{ color: '#a1a1aa' }}>Foundation</span>
-                <span style={{ color: '#ffffff' }}>15% Complete</span>
+                <span style={{ color: '#ffffff' }}>{progressPercent}% Complete</span>
               </div>
               <div className="q-progress-container">
                 <motion.div
                   className="q-progress-fill"
                   initial={{ width: '0%' }}
-                  animate={{ width: '15%' }}
+                  animate={{ width: `${progressPercent}%` }}
                   transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
                 />
               </div>
@@ -322,9 +355,9 @@ export default function PathwayPage() {
             style={{ position: 'relative', zIndex: 5 }}
           >
             {viewMode === 'helix' ? (
-              <DNAHelix modules={modules} />
+              <DNAHelix modules={modules} completedModules={completedModules} onToggleComplete={toggleComplete} />
             ) : (
-              <PhotoCard modules={modules} />
+              <PhotoCard modules={modules} completedModules={completedModules} onToggleComplete={toggleComplete} />
             )}
           </motion.div>
 
