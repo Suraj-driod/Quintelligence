@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { CheckCircle2, XCircle, Zap, Terminal, GitMerge, BrainCircuit, ArrowRight } from 'lucide-react';
@@ -9,6 +10,31 @@ import GitHubCard from '../../components/GitHubCard';
 import SkillChip from '../../components/SkillChip';
 
 export default function AnalysisPage() {
+  const [analysisData, setAnalysisData] = useState(null);
+  const [githubProfile, setGithubProfile] = useState(null);
+
+  useEffect(() => {
+    const dataStr = localStorage.getItem('pathwayData');
+    if (dataStr) {
+      try {
+        const parsed = JSON.parse(dataStr);
+        if (parsed.analysis) {
+          setAnalysisData(parsed.analysis);
+        }
+        if (parsed.githubProfile) {
+          setGithubProfile(parsed.githubProfile);
+        }
+      } catch (e) {
+        console.error("Failed to parse pathwayData", e);
+      }
+    }
+  }, []);
+
+  const knownSkills = analysisData?.knownSkills || [];
+  const missingSkills = analysisData?.missingSkills || [];
+  const weakSkills = analysisData?.weakSkills || [];
+  const reasoning = analysisData?.reasoning || [];
+  const totalSkills = knownSkills.length + missingSkills.length + weakSkills.length;
   // Framer Motion Variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -173,27 +199,29 @@ export default function AnalysisPage() {
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
               <div className="metric-pill" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)' }}>
                 <BrainCircuit size={16} />
-                12 Skills Detected
+                {totalSkills} Skills Detected
               </div>
               <div className="metric-pill" style={{ color: '#f43f5e' }}>
                 <XCircle size={16} />
-                5 Gaps Found
+                {missingSkills.length} Gaps Found
               </div>
               <div className="metric-pill" style={{ color: '#10b981' }}>
                 <CheckCircle2 size={16} />
-                7 Already Known
+                {knownSkills.length} Already Known
               </div>
             </div>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            style={{ marginBottom: '64px' }}
-          >
-            <GitHubCard />
-          </motion.div>
+          {githubProfile && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              style={{ marginBottom: '64px' }}
+            >
+              <GitHubCard profile={githubProfile} />
+            </motion.div>
+          )}
 
           {/* THREE SKILL COLUMNS */}
           <motion.div 
@@ -213,11 +241,11 @@ export default function AnalysisPage() {
               <p style={{ color: '#71717a', fontSize: '14px', marginBottom: '24px', paddingLeft: '44px', margin: 0 }}>Skills matched from your profile.</p>
               
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '24px' }}>
-                <SkillChip label="Python" />
-                <SkillChip label="JavaScript" />
-                <SkillChip label="React" />
-                <SkillChip label="Next.js" />
-                <SkillChip label="CSS" />
+                {knownSkills.length > 0 ? (
+                  knownSkills.map((skill, i) => <SkillChip key={i} label={skill} />)
+                ) : (
+                  <span style={{ color: '#a1a1aa', fontSize: '14px' }}>No explicitly known skills detected.</span>
+                )}
               </div>
             </motion.div>
 
@@ -232,14 +260,16 @@ export default function AnalysisPage() {
               <p style={{ color: '#71717a', fontSize: '14px', marginBottom: '24px', paddingLeft: '44px', margin: 0 }}>Required skills completely missing.</p>
               
               <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', marginTop: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '12px' }}>
-                  <span style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px' }}>GraphQL</span>
-                  <span className="level-badge" style={{ marginLeft: 'auto' }}>Intermediate Req.</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '12px' }}>
-                  <span style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px' }}>Docker</span>
-                  <span className="level-badge" style={{ marginLeft: 'auto' }}>Basic Req.</span>
-                </div>
+                {missingSkills.length > 0 ? (
+                  missingSkills.map((ms, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '12px' }}>
+                      <span style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px' }}>{ms.name}</span>
+                      <span className="level-badge" style={{ marginLeft: 'auto' }}>{ms.requiredLevel} Req.</span>
+                    </div>
+                  ))
+                ) : (
+                  <span style={{ color: '#a1a1aa', fontSize: '14px' }}>No critical skill gaps found!</span>
+                )}
               </div>
             </motion.div>
 
@@ -254,22 +284,20 @@ export default function AnalysisPage() {
               <p style={{ color: '#71717a', fontSize: '14px', marginBottom: '24px', paddingLeft: '44px', margin: 0 }}>Skills below required proficiency.</p>
               
               <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', marginTop: '24px' }}>
-                <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px' }}>
-                  <div style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>TypeScript</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#a1a1aa' }}>
-                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '6px' }}>Beginner</span>
-                    <ArrowRight size={12} />
-                    <span style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fcd34d', padding: '4px 8px', borderRadius: '6px', fontWeight: 600 }}>Intermediate</span>
-                  </div>
-                </div>
-                <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px' }}>
-                  <div style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>System Design</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#a1a1aa' }}>
-                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '6px' }}>Intermediate</span>
-                    <ArrowRight size={12} />
-                    <span style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fcd34d', padding: '4px 8px', borderRadius: '6px', fontWeight: 600 }}>Advanced</span>
-                  </div>
-                </div>
+                {weakSkills.length > 0 ? (
+                  weakSkills.map((ws, i) => (
+                    <div key={i} style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px' }}>
+                      <div style={{ color: '#e2e2e2', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>{ws.name}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#a1a1aa' }}>
+                        <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '6px' }}>{ws.currentLevel}</span>
+                        <ArrowRight size={12} />
+                        <span style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fcd34d', padding: '4px 8px', borderRadius: '6px', fontWeight: 600 }}>{ws.targetLevel}</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <span style={{ color: '#a1a1aa', fontSize: '14px' }}>You meet the target proficiency in all identified skills.</span>
+                )}
               </div>
             </motion.div>
           </motion.div>
@@ -292,18 +320,17 @@ export default function AnalysisPage() {
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ color: '#a1a1aa' }}>
-                <span style={{ color: '#10b981' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> Scanning resume and GitHub repos for matches against Senior Frontend Developer JD...
-              </div>
-              <div style={{ color: '#a1a1aa' }}>
-                <span style={{ color: '#10b981' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> Found strong evidence of React/Next.js and general JS/Python from 24 public repos.
-              </div>
-              <div style={{ color: '#a1a1aa' }}>
-                <span style={{ color: '#f43f5e' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> Missing evidence of GraphQL and Docker. JD strictly requires intermediate GraphQL for data fetching.
-              </div>
-              <div style={{ color: '#a1a1aa' }}>
-                <span style={{ color: '#f59e0b' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> TypeScript is mentioned in resume, but GitHub shows predominantly JS repos, classifying as "Needs Improvement" to clear Senior bar.
-              </div>
+                {reasoning.length > 0 ? (
+                  reasoning.map((log, i) => (
+                    <div key={i} style={{ color: '#a1a1aa' }}>
+                      <span style={{ color: i % 2 === 0 ? '#10b981' : (i % 3 === 0 ? '#f43f5e' : '#f59e0b') }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> {log}
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ color: '#a1a1aa' }}>
+                    <span style={{ color: '#10b981' }}>➜</span> <span style={{ color: '#60a5fa' }}>~</span> Analyzing user profile data...
+                  </div>
+                )}
             </div>
           </motion.div>
 

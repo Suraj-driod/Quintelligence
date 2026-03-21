@@ -1,55 +1,65 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Layers, Clock, Sparkles, Activity } from 'lucide-react';
 // Assuming these exist in your project
 import DNAHelix from '../../components/DNAHelix';
 import FeedbackPanel from '../../components/FeedbackPanel';
 
-const dummyModules = [
-  {
-    id: 1,
-    name: 'Advanced TypeScript Patterns',
-    duration: '8 hrs',
-    skills: ['TypeScript', 'Generics', 'Utility Types'],
-    reasoning: 'Addresses the gap from Beginner to Intermediate TypeScript required by the JD. Your repos show mostly JS.'
-  },
-  {
-    id: 2,
-    name: 'GraphQL Data Fetching in React',
-    duration: '12 hrs',
-    skills: ['GraphQL', 'Apollo', 'Caching'],
-    reasoning: 'Fills the missing GraphQL requirement completely. Critical for the Senior Frontend role.'
-  },
-  {
-    id: 3,
-    name: 'Docker Fundamentals for Devs',
-    duration: '4 hrs',
-    skills: ['Docker', 'Containers', 'CI/CD'],
-    reasoning: 'Basic understanding of containerization is expected in the JD for local environment setups.'
-  },
-  {
-    id: 4,
-    name: 'Frontend System Design',
-    duration: '16 hrs',
-    skills: ['System Design', 'Architecture', 'Performance'],
-    reasoning: 'Bridges your current intermediate system design skills to the advanced level required for leadership.'
-  }
-];
-
 export default function PathwayPage() {
-  const [modules, setModules] = useState(dummyModules);
+  const [modules, setModules] = useState([]);
+  const [role, setRole] = useState("Analyzing...");
+  const [estimatedHours, setEstimatedHours] = useState(0);
   const [isRegenerating, setIsRegenerating] = useState(false);
+
+  useEffect(() => {
+    const dataStr = localStorage.getItem('pathwayData');
+    if (dataStr) {
+      try {
+        const parsed = JSON.parse(dataStr);
+        if (parsed.pathway) {
+          setModules(parsed.pathway.modules || []);
+          setRole(parsed.pathway.role || "Target Role");
+          setEstimatedHours(parsed.pathway.estimatedHours || 0);
+        }
+      } catch (e) {
+        console.error("Failed to parse pathwayData", e);
+      }
+    }
+  }, []);
 
   const handleRegenerate = async (feedback) => {
     setIsRegenerating(true);
-    // Simulate API delay with a smooth, premium timing
-    await new Promise(r => setTimeout(r, 2400));
-    
-    // Simulate updating modules based on feedback
-    setModules(prev => prev.map(m => ({ ...m, duration: 'Refined' })));
-    setIsRegenerating(false);
+    try {
+      const res = await fetch("/api/refine-pathway", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role, modules, feedback })
+      });
+
+      if (!res.ok) throw new Error("Failed to refine pathway");
+
+      const data = await res.json();
+      if (data.modules) {
+        setModules(data.modules);
+        
+        // Persist to localStorage
+        const dataStr = localStorage.getItem('pathwayData');
+        if (dataStr) {
+          const parsed = JSON.parse(dataStr);
+          if (parsed.pathway) {
+            parsed.pathway.modules = data.modules;
+            localStorage.setItem('pathwayData', JSON.stringify(parsed));
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Refinement error:", error);
+      alert("Failed to refine the pathway. Please try again.");
+    } finally {
+      setIsRegenerating(false);
+    }
   };
 
   // Framer Motion Orchestration
@@ -222,13 +232,13 @@ export default function PathwayPage() {
               style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '40px' }}
             >
               <motion.div variants={pillVariants} className="q-meta-pill">
-                <Target size={14} /> Senior Frontend Developer
+                <Target size={14} /> {role}
               </motion.div>
               <motion.div variants={pillVariants} className="q-meta-pill">
                 <Layers size={14} /> {modules.length} Modules
               </motion.div>
               <motion.div variants={pillVariants} className="q-meta-pill">
-                <Clock size={14} /> Est. 40 Hours
+                <Clock size={14} /> Est. {estimatedHours} Hours
               </motion.div>
             </motion.div>
 

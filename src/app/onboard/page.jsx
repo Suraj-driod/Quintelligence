@@ -15,13 +15,35 @@ export default function OnboardPage() {
 
   const canAnalyze = resume && jd.trim().length > 10;
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!canAnalyze) return;
     setIsAnalyzing(true);
-    // Simulate API delay
-    setTimeout(() => {
-      router.push('/analysis');
-    }, 2000);
+
+    try {
+      const formData = new FormData();
+      formData.append("resume", resume);
+      formData.append("jobDescription", jd);
+      if (github) {
+        formData.append("github", github);
+      }
+
+      const res = await fetch("/api/generate-pathway", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to generate pathway");
+      }
+
+      const data = await res.json();
+      localStorage.setItem("pathwayData", JSON.stringify(data));
+      router.push("/analysis");
+    } catch (error) {
+      console.error(error);
+      setIsAnalyzing(false);
+      alert("Failed to generate pathway. Please try again.");
+    }
   };
 
   // Framer Motion Variants

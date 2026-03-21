@@ -1,21 +1,44 @@
-import pdfParse from "pdf-parse";
+// parseResume.js
 
 export async function parseResume(fileBuffer) {
-    // Step 1: Extract text
-    const data = await pdfParse(fileBuffer);
-    const text = data.text;
+    try {
+        // ✅ Dynamic import (BEST for Next.js)
+        const pdfParse = (await import("pdf-parse")).default;
 
-    // Step 2: Regex GitHub extraction
-    const githubRegex = /https?:\/\/(www\.)?github\.com\/[A-Za-z0-9_-]+/i;
-    let github = text.match(githubRegex)?.[0] || null;
+        // ✅ Extract text from PDF
+        const data = await pdfParse(fileBuffer);
+        const text = data.text || "";
 
-    // Step 3: Fix missing https
-    if (github && !github.startsWith("http")) {
-        github = "https://" + github;
+        // ✅ Improved GitHub regex (handles missing https, www, etc.)
+        const githubRegex =
+            /(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9_-]+/i;
+
+        let github = text.match(githubRegex)?.[0] || null;
+
+        // ✅ Normalize GitHub URL
+        if (github) {
+            github = github.trim();
+
+            // Add https if missing
+            if (!github.startsWith("http")) {
+                github = "https://" + github;
+            }
+
+            // Remove trailing slashes or junk
+            github = github.replace(/\/+$/, "");
+        }
+
+        return {
+            text,
+            github,
+        };
+    } catch (error) {
+        console.error("Error parsing resume:", error);
+
+        return {
+            text: "",
+            github: null,
+            error: "Failed to parse resume",
+        };
     }
-
-    return {
-        text,
-        github,
-    };
 }

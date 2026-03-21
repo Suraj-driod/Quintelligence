@@ -26,11 +26,10 @@ Return JSON:
 }
 `;
 
-    const res = await fetch(GEMINI_API, {
+    const res = await fetch(`${GEMINI_API}?key=${process.env.GEMINI_API_KEY}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.GEMINI_API_KEY}`,
         },
         body: JSON.stringify({
             contents: [
@@ -41,6 +40,134 @@ Return JSON:
         }),
     });
 
+    if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(`Gemini API Error: ${res.status} - ${JSON.stringify(errData)}`);
+    }
+
     const data = await res.json();
     return data?.candidates?.[0]?.content?.parts?.[0]?.text;
 }
+
+export async function generatePathwayWithGemini(inputText, repos, jobDescription = "") {
+    const prompt = `
+Analyze this user:
+
+Resume:
+${inputText}
+
+GitHub Repos:
+${JSON.stringify(repos)}
+
+${jobDescription ? `Target Job Description:\n${jobDescription}` : ""}
+
+Analyze the user's profile against the Target Job Description (if provided) and generate a learning roadmap.
+If no job description is provided, generate a general learning roadmap for their next logical career step.
+We need output strictly in the following JSON format:
+
+{
+  "analysis": {
+    "knownSkills": ["Python", "React"],
+    "missingSkills": [{ "name": "GraphQL", "requiredLevel": "Intermediate" }],
+    "weakSkills": [{ "name": "TypeScript", "currentLevel": "Beginner", "targetLevel": "Intermediate" }],
+    "reasoning": [
+      "Scanning resume and GitHub repos for matches against target role...",
+      "Found strong evidence of React and Python from 24 repos."
+    ]
+  },
+  "pathway": {
+    "role": "Senior Frontend Developer",
+    "estimatedHours": 40,
+    "modules": [
+      { 
+        "id": 1, 
+        "name": "Advanced TypeScript Patterns", 
+        "duration": "8 hrs", 
+        "skills": ["TypeScript"], 
+        "reasoning": "Addresses the gap from Beginner to Intermediate TypeScript."
+      }
+    ]
+  }
+}
+
+Important criteria:
+1. Provide valid JSON only. Do not wrap in markdown tags if possible, or if you do, wrap strictly in \`\`\`json.
+2. In 'analysis.reasoning', provide 3 to 4 string elements, simulating terminal processing logs like 'Scanning resume...' and 'Missing evidence of Docker...'.
+3. In 'pathway', 'role' should be a concise job title reflecting the next logical step or the given JD.
+4. 'modules' array should contain exactly what to learn, with each having an integer 'id', a 'name', 'duration' (like '8 hrs'), array of top 'skills' covered, and a short 'reasoning' why it's recommended.
+`;
+
+    const res = await fetch(`${GEMINI_API}?key=${process.env.GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            contents: [
+                {
+                    parts: [{ text: prompt }],
+                },
+            ],
+        }),
+    });
+
+    if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(`Gemini API Error: ${res.status} - ${JSON.stringify(errData)}`);
+    }
+
+    const data = await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text;
+}
+
+export async function refinePathwayWithGemini(modules, role, feedback) {
+    const prompt = `
+You are an expert career coach AI.
+I have a learning pathway for the role: ${role}.
+Here is the current list of learning modules in JSON format:
+${JSON.stringify(modules)}
+
+The user provided the following feedback to refine this pathway:
+"${feedback}"
+
+Your task is to modify the existing modules based ONLY on this feedback. You can add, remove, or edit modules, durations, or skills to better suit their request.
+We need output strictly in the following JSON format:
+{
+  "modules": [
+    { 
+      "id": 1, 
+      "name": "Module Name", 
+      "duration": "8 hrs", 
+      "skills": ["Skill1", "Skill2"], 
+      "reasoning": "Why this is recommended based on their feedback."
+    }
+  ]
+}
+
+Important criteria:
+1. Provide valid JSON only. Do not wrap in markdown tags if possible, or if you do, wrap strictly in \`\`\`json.
+2. The output MUST contain the "modules" array with the exact same object structure as the input.
+`;
+
+    const res = await fetch(`${GEMINI_API}?key=${process.env.GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            contents: [
+                {
+                    parts: [{ text: prompt }],
+                },
+            ],
+        }),
+    });
+
+    if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(`Gemini API Error: ${res.status} - ${JSON.stringify(errData)}`);
+    }
+
+    const data = await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text;
+}
