@@ -38,6 +38,8 @@ export default function Loading() {
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
         .q-loading-wrapper {
           position: fixed; inset: 0;
           background: #000;
@@ -77,10 +79,6 @@ export default function Loading() {
           box-shadow: 0 0 10px #fff;
         }
 
-        /* ═══════════════════════════════════════════════════
-           CUBE — 120×120×120px
-        ═══════════════════════════════════════════════════ */
-
         .q-scene {
           perspective: 520px;
           perspective-origin: 50% 38%;
@@ -95,7 +93,6 @@ export default function Loading() {
           transform: rotateX(-28deg) rotateY(45deg);
         }
 
-        /* ── LAYERS (side faces and caps) ── */
         .q-layer {
           position: absolute;
           width: 120px; height: 40px;
@@ -106,7 +103,6 @@ export default function Loading() {
         .q-layer-1 { top: 40px; }
         .q-layer-2 { top: 80px; }
 
-        /* ── SOLVING ──────────────────────────────────────── */
         .is-solving {
           animation: master-drift 12s ease-in-out infinite;
         }
@@ -164,7 +160,6 @@ export default function Loading() {
           50%     { transform: rotateX(-28deg) rotateY(62deg); }
         }
 
-        /* ── ALL FACES ────────────────────────────────────── */
         .q-face {
           position: absolute;
           display: grid; gap: 3px; padding: 3px;
@@ -173,14 +168,12 @@ export default function Loading() {
           transform-style: preserve-3d;
         }
 
-        /* Side faces inside layers: 120×40, 3 cols × 1 row */
         .q-face-side {
           width: 120px; height: 40px;
           grid-template-columns: repeat(3,1fr);
           grid-template-rows: 1fr;
         }
 
-        /* Cap faces: now inside layers. Aligns cap center with layer center */
         .q-face-cap {
           width: 120px; height: 120px;
           top: -40px; left: 0;
@@ -188,24 +181,20 @@ export default function Loading() {
           grid-template-rows: repeat(3,1fr);
         }
 
-        /* Side face transforms (inside layers) */
         .q-front { transform: rotateY(0deg)   translateZ(60px); }
         .q-back  { transform: rotateY(180deg) translateZ(60px); }
         .q-right { transform: rotateY(90deg)  translateZ(60px); }
         .q-left  { transform: rotateY(-90deg) translateZ(60px); }
 
-        /* Caps: layer height is 40. Distance from center of layer to top/bottom edge is 20px */
         .q-top    { transform: rotateX(90deg)  translateZ(20px); }
         .q-bottom { transform: rotateX(-90deg) translateZ(20px); }
 
-        /* ── CELLS ──────────────────────────────────────────*/
         .q-cell {
           background: rgba(255,255,255,0.04);
           border-radius: 2px;
           box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
         }
 
-        /* Color scramble synced to 6s row cycle */
         .is-solving .q-cell {
           animation: color-scramble 6s ease-in-out infinite;
         }
@@ -228,7 +217,6 @@ export default function Loading() {
           100% { background: rgba(255,255,255,0.04); box-shadow: inset 0 0 8px rgba(0,0,0,0.9); }
         }
 
-        /* Solved colors */
         .is-solved .q-cell { animation: none !important; }
         .is-solved .q-front  .q-cell { background: #8B5CF6; box-shadow: 0 0 8px rgba(139,92,246,0.5), inset 0 0 16px rgba(139,92,246,0.3); }
         .is-solved .q-top    .q-cell { background: #EC4899; box-shadow: 0 0 8px rgba(236,72,153,0.5), inset 0 0 16px rgba(236,72,153,0.3); }
@@ -249,13 +237,14 @@ export default function Loading() {
           to   { transform: scale(1.3); opacity: 0.4; }
         }
 
+        /* ── CHANGED: font-size 15px → 18px ── */
         .q-loading-text {
           font-family: 'Plus Jakarta Sans', sans-serif;
-          font-size: 15px; font-weight: 600; letter-spacing: 0.05em;
+          font-size: 18px; font-weight: 600; letter-spacing: 0.03em;
           color: #a1a1aa;
           text-align: center;
           text-shadow: 0 0 10px rgba(255,255,255,0.2);
-          width: 360px;
+          width: 420px;
           flex-shrink: 0;
         }
       `}</style>
@@ -308,7 +297,7 @@ export default function Loading() {
             transition={{ type: 'spring', stiffness: 120, damping: 18 }}
             style={{
               display: 'flex', flexDirection: 'column',
-              alignItems: 'center', gap: '56px',
+              alignItems: 'center', gap: '80px',
             }}
           >
             {/* CUBE CONTAINER */}
@@ -317,7 +306,6 @@ export default function Loading() {
               <div className="q-scene">
                 <div className={`q-cube ${phase === 2 ? 'is-solving' : 'is-solved'}`}>
 
-                  {/* LAYER 0 — top row sides + TOP CAP */}
                   <div className="q-layer q-layer-0">
                     <div className="q-face q-face-cap q-top">{cells(9)}</div>
                     <div className="q-face q-face-side q-front">{cells(3)}</div>
@@ -326,7 +314,6 @@ export default function Loading() {
                     <div className="q-face q-face-side q-left">{cells(3)}</div>
                   </div>
 
-                  {/* LAYER 1 — middle row sides only */}
                   <div className="q-layer q-layer-1">
                     <div className="q-face q-face-side q-front">{cells(3)}</div>
                     <div className="q-face q-face-side q-right">{cells(3)}</div>
@@ -334,7 +321,6 @@ export default function Loading() {
                     <div className="q-face q-face-side q-left">{cells(3)}</div>
                   </div>
 
-                  {/* LAYER 2 — bottom row sides + BOTTOM CAP */}
                   <div className="q-layer q-layer-2">
                     <div className="q-face q-face-cap q-bottom">{cells(9)}</div>
                     <div className="q-face q-face-side q-front">{cells(3)}</div>
@@ -358,7 +344,7 @@ export default function Loading() {
                   transition={{ duration: 0.4 }}
                   style={{ color: phase === 3 ? '#ffffff' : '#a1a1aa' }}
                 >
-                  {phase === 3 ? 'System Locked. Pathway Ready.' : loadingTexts[textIndex]}
+                  {phase === 3 ? 'System Locked. Pathway Loading.' : loadingTexts[textIndex]}
                 </motion.div>
               </AnimatePresence>
             </div>
