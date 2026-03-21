@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Layers, Clock, Sparkles, Activity } from 'lucide-react';
 // Assuming these exist in your project
 import DNAHelix from '../../components/DNAHelix';
+import PhotoCard from '../../components/PhotoCard';
 import FeedbackPanel from '../../components/FeedbackPanel';
 
 export default function PathwayPage() {
@@ -12,6 +13,7 @@ export default function PathwayPage() {
   const [role, setRole] = useState("Analyzing...");
   const [estimatedHours, setEstimatedHours] = useState(0);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [viewMode, setViewMode] = useState('helix');
 
   useEffect(() => {
     const dataStr = localStorage.getItem('pathwayData');
@@ -47,7 +49,7 @@ export default function PathwayPage() {
       const data = await res.json();
       if (data.modules) {
         setModules(data.modules);
-        
+
         // Persist to localStorage
         if (dataStr) {
           const parsed = JSON.parse(dataStr);
@@ -210,9 +212,9 @@ export default function PathwayPage() {
         <div className="q-core-glow" />
 
         <div style={{ maxWidth: '960px', margin: '0 auto', padding: '80px 24px', position: 'relative', zIndex: 10 }}>
-          
+
           {/* --- HEADER --- */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -226,9 +228,9 @@ export default function PathwayPage() {
             <h1 className="q-metallic-text" style={{ fontSize: 'clamp(40px, 5vw, 56px)', fontWeight: 800, margin: '0 0 32px 0', letterSpacing: '-0.04em' }}>
               Your Learning DNA
             </h1>
-            
+
             {/* Meta Information Pills */}
-            <motion.div 
+            <motion.div
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -246,7 +248,7 @@ export default function PathwayPage() {
             </motion.div>
 
             {/* Premium Animated Progress Bar */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -257,7 +259,7 @@ export default function PathwayPage() {
                 <span style={{ color: '#ffffff' }}>15% Complete</span>
               </div>
               <div className="q-progress-container">
-                <motion.div 
+                <motion.div
                   className="q-progress-fill"
                   initial={{ width: '0%' }}
                   animate={{ width: '15%' }}
@@ -267,35 +269,80 @@ export default function PathwayPage() {
             </motion.div>
           </motion.div>
 
-          {/* --- DNA HELIX BLOCK --- */}
+          {/* --- VIEW TOGGLE --- */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            style={{ display: 'flex', justifyContent: 'center', marginBottom: '64px', position: 'relative', zIndex: 10 }}
+          >
+            <button
+              onClick={() => setViewMode(prev => prev === 'helix' ? 'flowchart' : 'helix')}
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: '#ffffff',
+                padding: '14px 28px',
+                borderRadius: '999px',
+                fontSize: '14px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+                backdropFilter: 'blur(12px)',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)';
+              }}
+            >
+              <Layers size={16} color="#10b981" />
+              Change Cable Management
+            </button>
+          </motion.div>
+
+          {/* --- MODULES VIEW (Helix or Flowchart) --- */}
           {/* Notice the physics: When regenerating, it scales down, fades, and blurs to simulate "moving into the background" */}
-          <motion.div 
-            animate={{ 
-              opacity: isRegenerating ? 0.3 : 1, 
+          <motion.div
+            animate={{
+              opacity: isRegenerating ? 0.3 : 1,
               scale: isRegenerating ? 0.95 : 1,
               filter: isRegenerating ? 'blur(8px)' : 'blur(0px)'
-            }} 
+            }}
             transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
             style={{ position: 'relative', zIndex: 5 }}
           >
-            <DNAHelix modules={modules} />
+            {viewMode === 'helix' ? (
+              <DNAHelix modules={modules} />
+            ) : (
+              <PhotoCard modules={modules} />
+            )}
           </motion.div>
 
           {/* --- CINEMATIC LOADING OVERLAY --- */}
           <AnimatePresence>
             {isRegenerating && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ 
-                  position: 'fixed', inset: 0, zIndex: 100, 
+                style={{
+                  position: 'fixed', inset: 0, zIndex: 100,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: 'rgba(0,0,0,0.4)', pointerEvents: 'none'
                 }}
               >
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0.9, y: 20 }}
                   animate={{ scale: 1, y: 0 }}
                   exit={{ scale: 0.9, y: 20 }}
