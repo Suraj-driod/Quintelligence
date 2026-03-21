@@ -2,8 +2,13 @@
 
 export async function parseResume(fileBuffer) {
     try {
-        // ✅ Dynamic import (BEST for Next.js)
-        const pdfParse = (await import("pdf-parse")).default;
+        // ✅ Robust Import (handles different bundler states)
+        const pdfParseMod = await import("pdf-parse");
+        const pdfParse = pdfParseMod.default || pdfParseMod;
+
+        if (typeof pdfParse !== 'function') {
+            throw new Error(`pdf-parse is not a function (found ${typeof pdfParse})`);
+        }
 
         // ✅ Extract text from PDF
         const data = await pdfParse(fileBuffer);

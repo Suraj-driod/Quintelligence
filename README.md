@@ -1,36 +1,194 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Quintelligence
 
-## Getting Started
+**Quintelligence** is an AI-powered adaptive onboarding engine that creates personalized learning pathways based on a user's resume, target job description, GitHub profile, and learning preferences. Instead of a fixed one-size-fits-all onboarding flow, the platform identifies skill gaps and generates a customized roadmap to help users reach role-specific competency faster.
 
-First, run the development server:
+## Live Demo
+
+Deployed application: `https://quintelligence.vercel.app/`
+
+## GitHub Repository
+
+Source code: `https://github.com/Suraj-driod/Quintelligence.git`
+
+---
+
+## Features
+
+- Resume PDF upload and parsing
+- Job description analysis
+- GitHub project and language analysis
+- Skill-gap detection
+- Adaptive pathway generation
+- Personalized learning material recommendations
+- Interactive pathway visualization
+- User feedback-based pathway adjustment
+
+---
+
+## Tech Stack
+
+- Next.js
+- Tailwind CSS
+- Firebase
+- Gemini 2.5 Flash
+- PDF Parser
+
+---
+
+## Prerequisites
+
+Before running the project, make sure you have the following installed:
+
+- Node.js
+- npm
+- Docker Desktop
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the root directory and add the following values:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+GEMINI_API_KEY=your_gemini_key_here
+```
+
+You should also include a `.env.example` file in the repository with placeholder values only.
+
+---
+
+## Run Locally
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Suraj-driod/Quintelligence.git
+cd Quintelligence
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. Open in browser
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Visit:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+http://localhost:3000
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🐳 Run with Docker (Recommended)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The easiest way to run the platform is using Docker Compose. This ensures all environment variables and build arguments are handled automatically.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. Build and Start
+Ensure you have a `.env` file in the root with your API keys. Then run:
 
-## Deploy on Vercel
+```bash
+docker-compose up --build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. Access the Application
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🛠️ Manual Docker Build (Optional)
+
+If you prefer to build the image manually, you must pass the Firebase public keys as build arguments:
+
+```bash
+docker build \
+  -t quintelligence \
+  --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=your_key \
+  --build-arg NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain \
+  --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_id \
+  --build-arg NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket \
+  --build-arg NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_id \
+  --build-arg NEXT_PUBLIC_FIREBASE_APP_ID=your_id \
+  --build-arg NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_id \
+  .
+```
+
+### Run the Image
+```bash
+docker run -p 3000:3000 --env-file .env quintelligence
+```
+
+---
+
+## 💡 Docker Architecture Notes
+
+- **Standalone Mode**: The project uses Next.js `standalone` output, which optimizes the image size by including only the necessary files to run the production server.
+- **Build Args**: `NEXT_PUBLIC_*` variables are required at build time to be baked into the client-side bundles.
+- **Runtime Env**: `GEMINI_API_KEY` and other secret keys are kept out of the image and passed at runtime via the environment for security.
+
+---
+
+## Project Structure
+
+```text
+Quintelligence/
+│── Dockerfile
+│── .dockerignore
+│── .env.example
+│── package.json
+│── README.md
+│── public/
+│── app/ or src/
+```
+
+---
+
+## Submission Notes
+
+This repository includes:
+
+- Source code
+- Dockerfile for reproducible setup
+- Environment variable template
+- Local and Docker-based setup instructions
+
+---
+
+## Important
+
+Do not commit the following files:
+
+```text
+.env
+.env.local
+node_modules
+.next
+```
+
+Make sure these are included in `.gitignore` and `.dockerignore`.
+
+---
+
+## Live Preview
+
+Vercel Deployment: `https://quintelligence.vercel.app/`
+
+---
+
+## License
+
+This project was built for hackathon submission and educational purposes.
