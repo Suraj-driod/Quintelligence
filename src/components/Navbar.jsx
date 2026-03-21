@@ -115,7 +115,7 @@ export default function Navbar() {
 
         {/* LOGO */}
         <Link
-          href="/"
+          href={user ? "/dashboard" : "/"}
           style={{
             fontSize: '22px',
             fontWeight: 800,
@@ -137,12 +137,9 @@ export default function Navbar() {
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}>
-          <Link href="/" className="glass-nav-link" style={{textDecoration: 'none'}}>Home</Link>
+          <Link href={user ? "/dashboard" : "/"} className="glass-nav-link" style={{textDecoration: 'none'}}>Home</Link>
           <Link href="/developers" className="glass-nav-link" style={{textDecoration: 'none'}}>Developers</Link>
           <Link href="/about" className="glass-nav-link" style={{textDecoration: 'none'}}>About</Link>
-          {user && (
-             <Link href="/dashboard" className="glass-nav-link" style={{textDecoration: 'none', color: '#10b981'}}>Dashboard</Link>
-          )}
         </div>
 
         {/* ACTION BUTTONS */}
@@ -150,13 +147,6 @@ export default function Navbar() {
 
           {user ? (
             <>
-              <Link
-                href="/dashboard"
-                className="glass-btn-primary"
-                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-              >
-                Go to Dashboard
-              </Link>
               <button 
                 onClick={handleSignOut}
                 className="glass-btn-secondary"
