@@ -68,31 +68,31 @@ export default function Navbar() {
       `}</style>
 
       <nav style={{
-        position: 'fixed', 
-        top: '24px',       
+        position: 'fixed',
+        top: '24px',
         left: '50%',
-        transform: 'translateX(-50%)', 
+        transform: 'translateX(-50%)',
         width: '95%',
         maxWidth: '1200px',
         zIndex: 50,
-        
+
         /* Dark frosted glass effect specifically for black backgrounds */
         background: 'rgba(255, 255, 255, 0.05)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
-        
+
         /* Pill shape and sharp glass edge */
         borderRadius: '9999px',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
-        
+
         /* Asymmetric padding to balance the buttons on the right */
         padding: '10px 14px 10px 32px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        
+
         {/* LOGO */}
         <Link
           href="/"
@@ -105,17 +105,17 @@ export default function Navbar() {
             textDecoration: 'none'
           }}
         >
-          quintelligence
+          Quintelligence
         </Link>
 
         {/* CENTER LINKS */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '32px', 
-          fontSize: '12px', 
-          fontWeight: 700, 
-          textTransform: 'uppercase', 
-          letterSpacing: '0.05em' 
+        <div style={{
+          display: 'flex',
+          gap: '32px',
+          fontSize: '12px',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em'
         }}>
           <span className="glass-nav-link">Home</span>
           <span className="glass-nav-link">Developers</span>
@@ -124,7 +124,7 @@ export default function Navbar() {
 
         {/* ACTION BUTTONS */}
         <div style={{ display: 'flex', gap: '12px' }}>
-          
+
           {/* High-Contrast Primary Button */}
           <Link
             href="/login"
@@ -135,7 +135,7 @@ export default function Navbar() {
           </Link>
 
         </div>
-        
+
       </nav>
     </>
   );
