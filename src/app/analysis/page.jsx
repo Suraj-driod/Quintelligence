@@ -242,7 +242,7 @@ export default function AnalysisPage() {
               
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '24px' }}>
                 {knownSkills.length > 0 ? (
-                  knownSkills.map((skill, i) => <SkillChip key={i} label={skill} />)
+                  knownSkills.map((skill, i) => <SkillChip key={i} label={typeof skill === 'string' ? skill : (skill.name || 'Skill')} />)
                 ) : (
                   <span style={{ color: '#a1a1aa', fontSize: '14px' }}>No explicitly known skills detected.</span>
                 )}

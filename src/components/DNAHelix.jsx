@@ -6,7 +6,7 @@ import RoadmapCard from './RoadmapCard';
 import ModuleModal from './ModuleModal';
 import { Trophy } from 'lucide-react';
 
-export default function DNAHelix({ modules }) {
+export default function DNAHelix({ modules, completedModules = [], onToggleComplete }) {
   const [selectedModule, setSelectedModule] = useState(null);
   const containerRef = useRef(null);
 
@@ -326,7 +326,14 @@ export default function DNAHelix({ modules }) {
       </div>
 
       {selectedModule && (
-        <ModuleModal module={selectedModule} onClose={() => setSelectedModule(null)} />
+        <ModuleModal 
+          module={selectedModule} 
+          onClose={() => setSelectedModule(null)} 
+          isCompleted={completedModules.includes(selectedModule.id)}
+          onToggleComplete={() => {
+            if (onToggleComplete) onToggleComplete(selectedModule.id);
+          }}
+        />
       )}
     </>
   );

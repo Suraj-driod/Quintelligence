@@ -12,7 +12,7 @@ const getResourceIcon = (type) => {
   return <Layers size={16} />;
 };
 
-export default function ModuleModal({ module, onClose }) {
+export default function ModuleModal({ module, onClose, isCompleted = false, onToggleComplete = null }) {
   if (!module) return null;
 
   return (
@@ -66,13 +66,51 @@ export default function ModuleModal({ module, onClose }) {
               <X size={18} />
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <span style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#a78bfa', padding: '6px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 700, letterSpacing: '0.05em' }}>
-                MODULE
-              </span>
-              <span style={{ color: '#71717a', fontSize: '14px', fontWeight: 600 }}>
-                {module.duration}
-              </span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#a78bfa', padding: '6px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  MODULE
+                </span>
+                <span style={{ color: '#71717a', fontSize: '14px', fontWeight: 600 }}>
+                  {module.duration}
+                </span>
+              </div>
+              
+              {onToggleComplete && (
+                <button
+                  onClick={onToggleComplete}
+                  style={{
+                    background: isCompleted ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
+                    color: isCompleted ? '#10b981' : '#a1a1aa',
+                    border: `1px solid ${isCompleted ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.1)'}`,
+                    padding: '6px 14px',
+                    borderRadius: '999px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s ease',
+                    marginRight: '48px' // Leave space for the close button
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isCompleted) {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                      e.currentTarget.style.color = '#ffffff';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isCompleted) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = '#a1a1aa';
+                    }
+                  }}
+                >
+                  <CheckCircle2 size={14} />
+                  {isCompleted ? 'Completed' : 'Mark Complete'}
+                </button>
+              )}
             </div>
 
             <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#ffffff', margin: '0 0 16px 0', lineHeight: 1.2 }}>
