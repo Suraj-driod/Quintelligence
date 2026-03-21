@@ -4,6 +4,9 @@ import HeroSection from '../components/HeroSection';
 import { motion } from 'framer-motion';
 import { FileText, BrainCircuit, Map, Github, ChevronRight } from 'lucide-react';
 import Loading from '@/components/Loading';
+import LoginPage from './login/page';
+
+
 
 export default function LandingPage() {
   // Advanced Framer Motion Spring Physics
@@ -327,6 +330,7 @@ export default function LandingPage() {
             © 2026 Quintelligence. Built for ARTPARK CodeForge Hackathon.
           </p>
         </footer>
+
 
       </div>
     </>

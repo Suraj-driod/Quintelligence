@@ -3,534 +3,401 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, Github, LockKeyhole, Mail, ShieldCheck, Sparkles } from "lucide-react";
-
-const benefits = [
-  "Adaptive role-based skill mapping",
-  "AI-guided DNA pathway generation",
-  "GitHub-backed technical depth analysis",
-];
-
-const quickStats = [
-  { value: "500+", label: "skills mapped" },
-  { value: "95%", label: "faster onboarding" },
-  { value: "10x", label: "training ROI" },
-];
+import { ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleGoogleLogin = () => {
     router.push("/onboard");
   };
 
   return (
     <>
       <style>{`
-        .q-login-shell {
+        .q-login-universe {
           min-height: 100vh;
-          display: grid;
-          grid-template-columns: 1.05fr 0.95fr;
-          background:
-            radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.08), transparent 26%),
-            radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.04), transparent 24%),
-            linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 35%),
-            var(--surface-lowest);
-          color: var(--text-primary);
+          background-color: transparent;
+          color: #e2e2e2;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           position: relative;
           overflow: hidden;
         }
 
-        .q-login-shell::before {
+        /* ── CABLE / CIRCUIT BACKGROUND ──────────────────────
+           Static cable geometry with animated glowing pulses
+           travelling along each wire. Radial vignette hides edges.
+        ─────────────────────────────────────────────────────── */
+        .q-cable-bg {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+
+        .q-cable-svg {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        /* Base cable — dim static wire */
+        .q-cable {
+          fill: none;
+          stroke: rgba(255,255,255,0.07);
+          stroke-width: 1;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        /* Travelling pulse — a short glowing dash moving along the cable.
+           stroke-dasharray: [pulse-length] [gap = total-path-length]
+           stroke-dashoffset animates from 0 to -total-path-length     */
+        .q-pulse {
+          fill: none;
+          stroke-width: 1.5;
+          stroke-linecap: round;
+          stroke: rgba(255,255,255,0.7);
+          filter: url(#wire-glow);
+        }
+
+        /* Junction dots */
+        .q-dot {
+          fill: rgba(255,255,255,0.15);
+          stroke: rgba(255,255,255,0.3);
+          stroke-width: 0.8;
+        }
+        .q-dot-hot {
+          fill: rgba(255,255,255,0.6);
+          filter: url(#wire-glow);
+        }
+
+        /* Radial vignette — fades cables near edges so centre is clear */
+        .q-cable-bg::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse 60% 60% at 50% 50%, transparent 20%, #000000 100%);
+          z-index: 2;
+          pointer-events: none;
+        }
+
+        /* The Grid Overlay */
+        .q-login-universe::after {
           content: "";
           position: absolute;
           inset: 0;
           background-image:
-            linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-          background-size: 64px 64px;
-          opacity: 0.55;
-          mask-image: radial-gradient(circle at center, black 42%, transparent 100%);
-          -webkit-mask-image: radial-gradient(circle at center, black 42%, transparent 100%);
+            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+          background-size: 40px 40px;
+          mask-image: radial-gradient(circle at center, black 20%, transparent 100%);
+          -webkit-mask-image: radial-gradient(circle at center, black 20%, transparent 100%);
+          z-index: 1;
           pointer-events: none;
         }
 
-        .q-login-brand,
-        .q-login-panel {
+        /* ── MONOLITH CARD ────────────────────────────────── */
+        .q-monolith {
           position: relative;
-          z-index: 1;
-        }
-
-        .q-login-brand {
-          padding: 48px clamp(24px, 6vw, 88px);
-          border-right: 1px solid rgba(255, 255, 255, 0.08);
+          z-index: 10;
+          width: min(100%, 420px);
+          padding: 48px 40px;
+          border-radius: 32px;
+          background: linear-gradient(180deg, rgba(20,20,20,0.6) 0%, rgba(5,5,5,0.9) 100%);
+          border: 1px solid rgba(255,255,255,0.1);
+          box-shadow:
+            inset 0 1px 0 0 rgba(255,255,255,0.15),
+            0 30px 60px rgba(0,0,0,0.8),
+            0 0 40px rgba(0,0,0,0.5);
+          backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
+          text-align: center;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
-          gap: 48px;
-        }
-
-        .q-login-panel {
-          padding: 48px clamp(24px, 5vw, 72px);
-          display: flex;
           align-items: center;
-          justify-content: center;
         }
 
-        .q-brand-mark {
+        .q-brand-pill {
           display: inline-flex;
           align-items: center;
-          gap: 12px;
-          color: var(--text-primary);
-          text-transform: uppercase;
-          letter-spacing: 0.2em;
-          font-size: 13px;
+          gap: 8px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          padding: 6px 16px;
+          border-radius: 999px;
+          font-size: 11px;
           font-weight: 700;
-        }
-
-        .q-brand-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 999px;
-          background: linear-gradient(135deg, #ffffff, #7f7f7f);
-          box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
-        }
-
-        .q-hero-kicker {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          width: fit-content;
-          padding: 8px 14px;
-          border-radius: 999px;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          background: rgba(255, 255, 255, 0.04);
-          color: var(--accent-soft);
-          font-size: 13px;
-          font-weight: 600;
-          margin-bottom: 24px;
-        }
-
-        .q-login-heading {
-          font-size: clamp(3rem, 6vw, 5.6rem);
-          line-height: 0.94;
-          letter-spacing: -0.07em;
-          font-weight: 800;
-          max-width: 620px;
-        }
-
-        .q-login-copy {
-          margin-top: 24px;
-          max-width: 520px;
-          color: var(--text-muted);
-          font-size: 18px;
-          line-height: 1.7;
-        }
-
-        .q-benefit-list {
-          display: grid;
-          gap: 16px;
-          margin-top: 36px;
-        }
-
-        .q-benefit-item {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          color: var(--accent-soft);
-          font-size: 15px;
-          font-weight: 500;
-        }
-
-        .q-benefit-icon {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 34px;
-          height: 34px;
-          border-radius: 12px;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          color: var(--accent-white);
-          flex-shrink: 0;
-        }
-
-        .q-stats-row {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 20px;
-        }
-
-        .q-stat-card {
-          padding: 22px 20px;
-          border-radius: 22px;
-          background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(18px);
-        }
-
-        .q-stat-value {
-          font-size: clamp(1.8rem, 3vw, 2.8rem);
-          font-weight: 800;
-          letter-spacing: -0.06em;
-          color: var(--accent-white);
-        }
-
-        .q-stat-label {
-          margin-top: 8px;
-          font-size: 12px;
+          letter-spacing: 0.2em;
           text-transform: uppercase;
-          letter-spacing: 0.18em;
-          color: var(--text-subtle);
+          color: #a1a1aa;
+          margin-bottom: 32px;
         }
-
-        .q-auth-card {
-          width: min(100%, 510px);
-          padding: 34px;
-          border-radius: 30px;
-          background: linear-gradient(180deg, rgba(31,31,31,0.92), rgba(12,12,12,0.96));
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
-          backdrop-filter: blur(20px);
+        .q-brand-dot {
+          width: 8px; height: 8px;
+          border-radius: 50%;
+          background: #ffffff;
+          box-shadow: 0 0 10px #ffffff;
         }
 
         .q-auth-title {
-          font-size: 38px;
-          line-height: 1;
-          letter-spacing: -0.05em;
+          font-size: 36px;
+          letter-spacing: -0.04em;
           font-weight: 800;
-          color: var(--accent-white);
+          color: #ffffff;
+          margin: 0 0 12px 0;
+          line-height: 1.1;
         }
 
         .q-auth-subtitle {
-          margin-top: 12px;
-          color: var(--text-muted);
-          line-height: 1.7;
+          color: #a1a1aa;
+          line-height: 1.6;
           font-size: 15px;
+          margin: 0 0 40px 0;
         }
 
-        .q-auth-form {
-          display: grid;
-          gap: 18px;
-          margin-top: 28px;
-        }
-
-        .q-auth-label {
-          display: block;
-          margin-bottom: 10px;
-          font-size: 13px;
+        /* ── LIQUID GOOGLE BUTTON ─────────────────────────── */
+        .q-liquid-google {
+          position: relative;
+          width: 100%;
+          padding: 18px 24px;
+          border-radius: 16px;
+          background: #0a0a0a;
+          color: #ffffff;
+          border: none;
+          font-family: inherit;
+          font-size: 16px;
           font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: var(--accent-soft);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          cursor: pointer;
+          overflow: hidden;
+          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
-        .q-input-wrap {
+        .q-liquid-google::before {
+          content: '';
+          position: absolute;
+          inset: -2px;
+          border-radius: 16px;
+          background: conic-gradient(from 0deg, transparent 60%, #8B5CF6, #06B6D4, #ffffff, transparent 100%);
+          animation: spin-border 3s linear infinite;
+          z-index: 0;
+        }
+        @keyframes spin-border { 100% { transform: rotate(360deg); } }
+        .q-liquid-google::after {
+          content: '';
+          position: absolute;
+          inset: 1px;
+          border-radius: 15px;
+          background: linear-gradient(180deg, #1f1f1f 0%, #0a0a0a 100%);
+          z-index: 1;
+          transition: background 0.3s ease;
+        }
+        .q-liquid-content {
+          position: relative;
+          z-index: 2;
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 0 18px;
-          min-height: 60px;
-          border-radius: 18px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
-
-        .q-input-wrap:focus-within {
-          border-color: rgba(255, 255, 255, 0.22);
-          background: rgba(255, 255, 255, 0.05);
-          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
+        .q-liquid-google:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(139,92,246,0.2);
         }
-
-        .q-input-wrap input {
-          width: 100%;
-          border: none;
-          outline: none;
-          background: transparent;
-          color: var(--text-primary);
-          font: inherit;
-          font-size: 15px;
-        }
-
-        .q-input-wrap input::placeholder {
-          color: var(--text-subtle);
-        }
-
-        .q-auth-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          margin-top: 4px;
-          font-size: 14px;
-          color: var(--text-muted);
-        }
-
-        .q-check {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .q-check input {
-          accent-color: #ffffff;
-        }
-
-        .q-link {
-          color: var(--accent-white);
-          text-decoration: none;
-        }
-
-        .q-link:hover {
-          opacity: 0.8;
-        }
-
-        .q-submit {
-          margin-top: 6px;
-          min-height: 62px;
-          border: none;
-          border-radius: 999px;
-          background: var(--accent-white);
-          color: #0f0f0f;
-          font: inherit;
-          font-size: 15px;
-          font-weight: 800;
-          letter-spacing: -0.02em;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          cursor: pointer;
-          transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-          box-shadow: 0 14px 35px rgba(255, 255, 255, 0.14);
-        }
-
-        .q-submit:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 20px 38px rgba(255, 255, 255, 0.18);
-        }
-
-        .q-divider {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          color: var(--text-subtle);
-          font-size: 12px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          margin: 8px 0;
-        }
-
-        .q-divider::before,
-        .q-divider::after {
-          content: "";
-          flex: 1;
-          height: 1px;
-          background: rgba(255, 255, 255, 0.08);
-        }
-
-        .q-social-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 14px;
-        }
-
-        .q-social-btn {
-          min-height: 56px;
-          border-radius: 18px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          background: rgba(255, 255, 255, 0.03);
-          color: var(--text-primary);
-          font: inherit;
-          font-size: 14px;
-          font-weight: 700;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          cursor: pointer;
-          transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
-        }
-
-        .q-social-btn:hover {
-          border-color: rgba(255, 255, 255, 0.18);
-          background: rgba(255, 255, 255, 0.06);
-          transform: translateY(-2px);
+        .q-liquid-google:hover::after {
+          background: linear-gradient(180deg, #2a2a2a 0%, #151515 100%);
         }
 
         .q-auth-footer {
-          margin-top: 24px;
-          text-align: center;
-          color: var(--text-muted);
-          font-size: 14px;
+          margin-top: 32px;
+          color: #71717a;
+          font-size: 13px;
         }
-
-        @media (max-width: 1080px) {
-          .q-login-shell {
-            grid-template-columns: 1fr;
-          }
-
-          .q-login-brand {
-            border-right: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          }
-
-          .q-stats-row {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-          }
+        .q-link {
+          color: #e2e2e2;
+          text-decoration: none;
+          font-weight: 600;
+          transition: color 0.2s ease;
         }
-
-        @media (max-width: 720px) {
-          .q-login-brand,
-          .q-login-panel {
-            padding: 28px 20px;
-          }
-
-          .q-login-heading {
-            font-size: 3rem;
-          }
-
-          .q-stats-row,
-          .q-social-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .q-auth-card {
-            padding: 24px;
-            border-radius: 24px;
-          }
-
-          .q-auth-row {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-        }
+        .q-link:hover { color: #ffffff; }
       `}</style>
 
-      <main className="q-login-shell">
-        <motion.section
-          className="q-login-brand"
-          initial={{ opacity: 0, x: -32 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          <div>
-            <Link href="/" className="q-brand-mark">
-              <span className="q-brand-dot" />
-              quintelligence
-            </Link>
-          </div>
+      <main className="q-login-universe">
 
-          <div>
-            <div className="q-hero-kicker">
-              <Sparkles size={14} />
-              Secure sign in for personalized onboarding
-            </div>
+        {/* ── CABLE BACKGROUND ── */}
+        <div className="q-cable-bg">
+          <svg
+            className="q-cable-svg"
+            viewBox="0 0 1440 900"
+            preserveAspectRatio="xMidYMid slice"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              {/* Glow filter for pulses and hot dots */}
+              <filter id="wire-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
 
-            <h1 className="q-login-heading">
-              Sign in to build your next engineering pathway.
-            </h1>
+            {/*
+              CABLE NETWORK — orthogonal wires (L-shaped paths) spreading
+              outward from the centre like a PCB trace layout.
+              Each cable has a matching pulse path with animated dashoffset.
+              
+              Path length estimates used for dasharray gaps:
+              Short  ~300px  → dasharray="40 260"
+              Medium ~600px  → dasharray="40 560"
+              Long   ~900px  → dasharray="40 860"
+              XLong  ~1200px → dasharray="40 1160"
+            */}
 
-            <p className="q-login-copy">
-              Access your role analysis, resume intelligence, and custom DNA roadmap from a single workspace tuned to the Quintelligence theme.
-            </p>
+            {/* ── TOP-LEFT CLUSTER ─────────────────────── */}
+            <path className="q-cable" d="M720,450 L720,340 L580,340 L580,200 L400,200" />
+            <path className="q-pulse" strokeDasharray="40 860" strokeDashoffset="0" d="M720,450 L720,340 L580,340 L580,200 L400,200">
+              <animate attributeName="stroke-dashoffset" from="0" to="-900" dur="4s" repeatCount="indefinite" />
+            </path>
 
-            <div className="q-benefit-list">
-              {benefits.map((benefit) => (
-                <div className="q-benefit-item" key={benefit}>
-                  <span className="q-benefit-icon">
-                    <ShieldCheck size={16} />
-                  </span>
-                  <span>{benefit}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+            <path className="q-cable" d="M720,450 L620,450 L620,300 L480,300 L480,140" />
+            <path className="q-pulse" strokeDasharray="40 620" strokeDashoffset="0" d="M720,450 L620,450 L620,300 L480,300 L480,140">
+              <animate attributeName="stroke-dashoffset" from="0" to="-660" dur="3.2s" repeatCount="indefinite" />
+            </path>
 
-          <div className="q-stats-row">
-            {quickStats.map((stat) => (
-              <div className="q-stat-card" key={stat.label}>
-                <div className="q-stat-value">{stat.value}</div>
-                <div className="q-stat-label">{stat.label}</div>
-              </div>
+            <path className="q-cable" d="M720,450 L720,380 L820,380 L820,240 L960,240 L960,100" />
+            <path className="q-pulse" strokeDasharray="40 720" strokeDashoffset="0" d="M720,450 L720,380 L820,380 L820,240 L960,240 L960,100">
+              <animate attributeName="stroke-dashoffset" from="0" to="-760" dur="4.5s" repeatCount="indefinite" />
+            </path>
+
+            {/* ── BOTTOM-LEFT CLUSTER ───────────────────── */}
+            <path className="q-cable" d="M720,450 L720,560 L560,560 L560,700 L380,700" />
+            <path className="q-pulse" strokeDasharray="40 760" strokeDashoffset="0" d="M720,450 L720,560 L560,560 L560,700 L380,700">
+              <animate attributeName="stroke-dashoffset" from="0" to="-800" dur="5s" repeatCount="indefinite" />
+            </path>
+
+            <path className="q-cable" d="M720,450 L620,450 L620,600 L440,600 L440,780" />
+            <path className="q-pulse" strokeDasharray="40 600" strokeDashoffset="0" d="M720,450 L620,450 L620,600 L440,600 L440,780">
+              <animate attributeName="stroke-dashoffset" from="0" to="-640" dur="3.8s" repeatCount="indefinite" />
+            </path>
+
+            {/* ── TOP-RIGHT CLUSTER ─────────────────────── */}
+            <path className="q-cable" d="M720,450 L820,450 L820,300 L1000,300 L1000,160" />
+            <path className="q-pulse" strokeDasharray="40 640" strokeDashoffset="0" d="M720,450 L820,450 L820,300 L1000,300 L1000,160">
+              <animate attributeName="stroke-dashoffset" from="0" to="-680" dur="3.5s" repeatCount="indefinite" />
+            </path>
+
+            <path className="q-cable" d="M720,450 L720,340 L900,340 L900,200 L1100,200 L1100,80" />
+            <path className="q-pulse" strokeDasharray="40 880" strokeDashoffset="0" d="M720,450 L720,340 L900,340 L900,200 L1100,200 L1100,80">
+              <animate attributeName="stroke-dashoffset" from="0" to="-920" dur="5.5s" repeatCount="indefinite" />
+            </path>
+
+            <path className="q-cable" d="M720,450 L860,450 L860,360 L1060,360 L1060,240 L1280,240" />
+            <path className="q-pulse" strokeDasharray="40 800" strokeDashoffset="0" d="M720,450 L860,450 L860,360 L1060,360 L1060,240 L1280,240">
+              <animate attributeName="stroke-dashoffset" from="0" to="-840" dur="4.8s" repeatCount="indefinite" />
+            </path>
+
+            {/* ── BOTTOM-RIGHT CLUSTER ──────────────────── */}
+            <path className="q-cable" d="M720,450 L820,450 L820,600 L1020,600 L1020,760" />
+            <path className="q-pulse" strokeDasharray="40 620" strokeDashoffset="0" d="M720,450 L820,450 L820,600 L1020,600 L1020,760">
+              <animate attributeName="stroke-dashoffset" from="0" to="-660" dur="4.2s" repeatCount="indefinite" />
+            </path>
+
+            <path className="q-cable" d="M720,450 L720,560 L900,560 L900,700 L1120,700 L1120,820" />
+            <path className="q-pulse" strokeDasharray="40 800" strokeDashoffset="0" d="M720,450 L720,560 L900,560 L900,700 L1120,700 L1120,820">
+              <animate attributeName="stroke-dashoffset" from="0" to="-840" dur="5.2s" repeatCount="indefinite" />
+            </path>
+
+            {/* ── WIDE HORIZONTAL RUNS ──────────────────── */}
+            <path className="q-cable" d="M720,450 L200,450 L200,300 L80,300" />
+            <path className="q-pulse" strokeDasharray="40 640" strokeDashoffset="0" d="M720,450 L200,450 L200,300 L80,300">
+              <animate attributeName="stroke-dashoffset" from="0" to="-680" dur="4s" repeatCount="indefinite" />
+            </path>
+
+            <path className="q-cable" d="M720,450 L1240,450 L1240,320 L1400,320" />
+            <path className="q-pulse" strokeDasharray="40 620" strokeDashoffset="0" d="M720,450 L1240,450 L1240,320 L1400,320">
+              <animate attributeName="stroke-dashoffset" from="0" to="-660" dur="3.6s" repeatCount="indefinite" />
+            </path>
+
+            <path className="q-cable" d="M720,450 L160,450 L160,600 L40,600" />
+            <path className="q-pulse" strokeDasharray="40 560" strokeDashoffset="0" d="M720,450 L160,450 L160,600 L40,600">
+              <animate attributeName="stroke-dashoffset" from="0" to="-600" dur="3.4s" repeatCount="indefinite" />
+            </path>
+
+            <path className="q-cable" d="M720,450 L1300,450 L1300,580 L1440,580" />
+            <path className="q-pulse" strokeDasharray="40 580" strokeDashoffset="0" d="M720,450 L1300,450 L1300,580 L1440,580">
+              <animate attributeName="stroke-dashoffset" from="0" to="-620" dur="3.9s" repeatCount="indefinite" />
+            </path>
+
+            {/* ── JUNCTION DOTS at bends ────────────────── */}
+            {[
+              [720, 340], [580, 340], [580, 200],
+              [620, 450], [620, 300], [480, 300],
+              [820, 380], [820, 240], [960, 240],
+              [720, 560], [560, 560], [560, 700],
+              [620, 600], [440, 600],
+              [820, 450], [820, 300], [1000, 300],
+              [900, 340], [900, 200], [1100, 200],
+              [860, 450], [860, 360], [1060, 360], [1060, 240],
+              [820, 600], [1020, 600],
+              [900, 560], [900, 700], [1120, 700],
+              [200, 450], [200, 300],
+              [1240, 450], [1240, 320],
+              [160, 450], [160, 600],
+              [1300, 450], [1300, 580],
+            ].map(([cx, cy], i) => (
+              <circle key={i} className="q-dot" cx={cx} cy={cy} r="3" />
             ))}
-          </div>
-        </motion.section>
 
-        <motion.section
-          className="q-login-panel"
-          initial={{ opacity: 0, x: 32 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.08 }}
+            {/* Centre origin dot — the bright hub */}
+            <circle cx="720" cy="450" r="5" className="q-dot" />
+            <circle cx="720" cy="450" r="2.5" className="q-dot-hot" />
+
+          </svg>
+        </div>
+
+        {/* The Central Monolith Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.8 }}
+          className="q-monolith"
         >
-          <div className="q-auth-card">
-            <div>
-              <h2 className="q-auth-title">Welcome back</h2>
-              <p className="q-auth-subtitle">
-                Sign in to continue your onboarding flow, review your saved profile, and launch a fresh pathway analysis.
-              </p>
-            </div>
-
-            <form className="q-auth-form" onSubmit={handleSubmit}>
-              <div>
-                <label className="q-auth-label" htmlFor="email">
-                  Email
-                </label>
-                <div className="q-input-wrap">
-                  <Mail size={18} color="var(--text-subtle)" />
-                  <input id="email" type="email" placeholder="name@company.com" required />
-                </div>
-              </div>
-
-              <div>
-                <label className="q-auth-label" htmlFor="password">
-                  Password
-                </label>
-                <div className="q-input-wrap">
-                  <LockKeyhole size={18} color="var(--text-subtle)" />
-                  <input id="password" type="password" placeholder="Enter your password" required />
-                </div>
-              </div>
-
-              <div className="q-auth-row">
-                <label className="q-check">
-                  <input type="checkbox" />
-                  <span>Keep me signed in</span>
-                </label>
-                <Link href="/onboard" className="q-link">
-                  Forgot password?
-                </Link>
-              </div>
-
-              <button className="q-submit" type="submit">
-                Continue to workspace
-                <ArrowRight size={18} />
-              </button>
-            </form>
-
-            <div className="q-divider">or continue with</div>
-
-            <div className="q-social-grid">
-              <button className="q-social-btn" type="button">
-                <Github size={18} />
-                GitHub
-              </button>
-              <button className="q-social-btn" type="button">
-                <Mail size={18} />
-                Google
-              </button>
-            </div>
-
-            <p className="q-auth-footer">
-              New to Quintelligence?{" "}
-              <Link href="/signup" className="q-link">
-                Start your first pathway
-              </Link>
-            </p>
+          <div className="q-brand-pill">
+            <span className="q-brand-dot" /> Quintelligence
           </div>
-        </motion.section>
+
+          <h1 className="q-auth-title">Enter the Pathway.</h1>
+          <p className="q-auth-subtitle">
+            Authenticate to unlock your personalized engineering intelligence and skill synthesis.
+          </p>
+
+          <button className="q-liquid-google" onClick={handleGoogleLogin}>
+            <div className="q-liquid-content">
+              <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+              </svg>
+              Sign in with Google
+              <ArrowRight size={18} style={{ marginLeft: '4px', opacity: 0.6 }} />
+            </div>
+          </button>
+
+          <p className="q-auth-footer">
+            By continuing, you agree to our <Link href="#" className="q-link">Terms</Link> and <Link href="#" className="q-link">Privacy</Link>.
+          </p>
+        </motion.div>
       </main>
     </>
   );
