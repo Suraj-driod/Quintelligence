@@ -1,4 +1,4 @@
-export const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+export const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent";
 
 export async function analyzeWithGemini(inputText, repos, jobDescription = "") {
     const prompt = `
@@ -208,4 +208,4 @@ Important criteria:
 
     const data = await res.json();
     return data?.candidates?.[0]?.content?.parts?.[0]?.text;
-}
+}

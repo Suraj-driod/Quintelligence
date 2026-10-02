@@ -30,7 +30,7 @@ Source code: `https://github.com/Suraj-driod/Quintelligence`
 - Next.js
 - Tailwind CSS
 - Firebase
-- Gemini 2.5 Flash
+- Gemini 3.5 Flash
 - PDF Parser
 
 ---
@@ -156,6 +156,3 @@ This repository includes:
 
 This project was built for hackathon submission and educational purposes.
 
-<div align="center">
-  <i>Built At ArtPark CodeForge Hackathon 2026</i>
-</div>

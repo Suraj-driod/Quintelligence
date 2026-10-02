@@ -326,7 +326,7 @@ export default function LandingPage() {
           zIndex: 10
         }}>
           <p style={{ color: '#52525b', fontSize: '14px', fontWeight: 500, letterSpacing: '0.05em', margin: 0 }}>
-            © 2026 Quintelligence. Built for ARTPARK CodeForge Hackathon.
+            © 2026 Quintelligence.
           </p>
         </footer>
 

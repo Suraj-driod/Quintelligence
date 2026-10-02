@@ -293,16 +293,6 @@ export default function AboutPage() {
           maxWidth: '1000px',
           margin: '0 auto'
         }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="q-badge"
-            style={{ marginBottom: '32px' }}
-          >
-            <span className="q-badge-dot" />
-            Built at ARTPARK CodeForge Hackathon
-          </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
