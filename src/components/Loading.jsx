@@ -17,15 +17,13 @@ export default function Loading() {
   const [textIndex, setTextIndex] = useState(0);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 600);
-    const t2 = setTimeout(() => setPhase(2), 1000);
-    const t3 = setTimeout(() => setPhase(3), 16000);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    const t1 = setTimeout(() => setPhase(1), 15000);
+    return () => { clearTimeout(t1); };
   }, []);
 
   useEffect(() => {
     let interval;
-    if (phase === 2) {
+    if (phase === 0) {
       interval = setInterval(() => {
         setTextIndex((prev) => Math.min(prev + 1, loadingTexts.length - 1));
       }, 2500);
@@ -50,33 +48,6 @@ export default function Loading() {
           gap: 56px;
           z-index: 9999;
           overflow: hidden;
-        }
-
-        .shake-impact { animation: screen-shake 0.4s cubic-bezier(0.36,0.07,0.19,0.97) both; }
-        @keyframes screen-shake {
-          0%,100% { transform: translate3d(0,0,0); }
-          10%,30%,50%,70%,90% { transform: translate3d(-15px,15px,0); }
-          20%,40%,60%,80%     { transform: translate3d(15px,-15px,0); }
-        }
-
-        .q-meteor {
-          position: absolute;
-          width: 6px; height: 200px;
-          background: linear-gradient(to bottom, transparent, #fff 80%);
-          border-radius: 999px;
-          box-shadow: 0 0 60px 15px rgba(6,182,212,0.8), 0 0 100px 30px rgba(139,92,246,0.6);
-          filter: blur(1px);
-        }
-        .q-shockwave {
-          position: absolute; width: 30px; height: 30px; border-radius: 50%;
-          background: #fff;
-          box-shadow: 0 0 150px 80px #fff, 0 0 300px 150px rgba(6,182,212,0.8);
-        }
-        .q-spark {
-          position: absolute; width: 100px; height: 2px;
-          background: linear-gradient(90deg,#fff,transparent);
-          transform-origin: left center;
-          box-shadow: 0 0 10px #fff;
         }
 
         .q-scene {
@@ -249,48 +220,8 @@ export default function Loading() {
         }
       `}</style>
 
-      <div className={`q-loading-wrapper ${phase === 1 ? 'shake-impact' : ''}`}>
+      <div className="q-loading-wrapper">
 
-        <AnimatePresence>
-          {phase === 0 && (
-            <motion.div className="q-meteor"
-              initial={{ y: '-80vh', opacity: 1 }}
-              animate={{ y: '0vh', opacity: 1 }}
-              exit={{ opacity: 0, scale: 0 }}
-              transition={{ duration: 0.6, ease: 'easeIn' }}
-            />
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {phase === 1 && (
-            <>
-              <motion.div
-                initial={{ opacity: 1 }} animate={{ opacity: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-                style={{ position: 'absolute', inset: 0, background: '#fff', zIndex: 50 }}
-              />
-              <motion.div className="q-shockwave"
-                initial={{ scale: 0, opacity: 1 }}
-                animate={{ scale: 12, opacity: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-              />
-              {[...Array(16)].map((_, i) => (
-                <motion.div key={i} className="q-spark"
-                  initial={{ x: 0, y: 0, opacity: 1, scaleX: 1, rotate: i * 22.5 }}
-                  animate={{
-                    x: Math.cos(i * 22.5 * Math.PI / 180) * 500,
-                    y: Math.sin(i * 22.5 * Math.PI / 180) * 500,
-                    opacity: 0, scaleX: 0
-                  }}
-                  transition={{ duration: 0.7, ease: 'easeOut' }}
-                />
-              ))}
-            </>
-          )}
-        </AnimatePresence>
-
-        {phase >= 2 && (
           <motion.div
             initial={{ scale: 0.4, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -304,7 +235,7 @@ export default function Loading() {
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div className="q-glow" />
               <div className="q-scene">
-                <div className={`q-cube ${phase === 2 ? 'is-solving' : 'is-solved'}`}>
+                <div className={`q-cube ${phase === 0 ? 'is-solving' : 'is-solved'}`}>
 
                   <div className="q-layer q-layer-0">
                     <div className="q-face q-face-cap q-top">{cells(9)}</div>
@@ -337,20 +268,19 @@ export default function Loading() {
             <div className="q-loading-text">
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={phase === 3 ? 'locked' : textIndex}
+                  key={phase === 1 ? 'locked' : textIndex}
                   initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
                   transition={{ duration: 0.4 }}
-                  style={{ color: phase === 3 ? '#ffffff' : '#a1a1aa' }}
+                  style={{ color: phase === 1 ? '#ffffff' : '#a1a1aa' }}
                 >
-                  {phase === 3 ? 'System Locked. Pathway Loading.' : loadingTexts[textIndex]}
+                  {phase === 1 ? 'System Locked. Pathway Loading.' : loadingTexts[textIndex]}
                 </motion.div>
               </AnimatePresence>
             </div>
 
           </motion.div>
-        )}
 
       </div>
     </>

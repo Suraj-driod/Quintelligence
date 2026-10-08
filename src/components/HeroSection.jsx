@@ -206,33 +206,6 @@ export default function HeroSection() {
           100% { background-position: 250% center; }
         }
 
-        /* Badge */
-        .hero-badge-premium {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.1);
-          color: #e4e4e7;
-          font-size: 13px; font-weight: 600;
-          border-radius: 9999px;
-          padding: 6px 16px 6px 12px;
-          margin-bottom: 32px;
-          backdrop-filter: blur(16px);
-          box-shadow: 0 0 20px rgba(255,255,255,0.05);
-          animation: slide-up 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
-          opacity: 0; transform: translateY(20px);
-        }
-        .live-dot {
-          width: 6px; height: 6px;
-          background: #ffffff; border-radius: 50%;
-          box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
-          animation: pulse-dot 2s ease-in-out infinite;
-        }
-        @keyframes pulse-dot {
-          0%,100% { opacity: 1; }
-          50%     { opacity: 0.4; }
-        }
 
         /* Buttons */
         .btn-premium-primary {
@@ -316,10 +289,6 @@ export default function HeroSection() {
           maxWidth: '840px'
         }}>
 
-          <div className="hero-badge-premium">
-            <span className="live-dot" />
-            AI-Powered • Adaptive • Personalized
-          </div>
 
           <h1 className="animate-stagger-1" style={{
             fontSize: 'clamp(3.5rem, 8vw, 6rem)',
